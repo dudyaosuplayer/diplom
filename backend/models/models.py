@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, SmallInteger, DateTime, ForeignKey
-from database import Base, engine, get_db, Session
+from backend.db.database import Base, engine, get_db, Session
 
 ROLE_USER = 0
 ROLE_ADMIN = 1
@@ -75,6 +75,7 @@ class Comment(Base):
 
 
 # Проверка
+Base.metadata.drop_all(engine)
 Base.metadata.create_all(engine)
 
 db: Session = next(get_db())

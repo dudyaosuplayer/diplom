@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
 from fastapi import Depends
 from typing import Annotated
-from config import settings
+from backend.db.config import settings
 
 engine = create_engine(
     url=settings.DATABASE_URL_psycopg,
