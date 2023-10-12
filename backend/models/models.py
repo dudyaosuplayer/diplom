@@ -1,19 +1,17 @@
-from sqlalchemy import Column, Integer, String, SmallInteger, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, SmallInteger, DateTime, ForeignKey, Table
+from sqlalchemy.orm import relationship
+
 from backend.db.database import Base, engine, get_db, Session
 
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
-
-class ProjectAssociation(Base):
-    __tablename__ = 'project_association'
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, index=True)
-    project_id = Column(Integer, index=True)
-
-    def __repr__(self):
-        return '<Project association between user_id %r and project_id %r>' % (self.user_id, self.project_id)
+project_user_association = Table(
+    'project_user_association',
+    Base.metadata,
+    Column('project_id', Integer, ForeignKey('project.id'), primary_key=True),
+    Column('user_id', Integer, ForeignKey('user.id'), primary_key=True)
+)
 
 
 class Project(Base):
@@ -23,6 +21,8 @@ class Project(Base):
     name = Column(String(255))
     status = Column(String(10))
     owner = Column(Integer)  # user.id
+
+    users = relationship('User', secondary=project_user_association, back_populates="projects")
 
     def __repr__(self):
         return '<Project %r have users %r>' % (self.name, self.users)
@@ -40,6 +40,10 @@ class User(Base):
     role = Column(SmallInteger, default=ROLE_USER)
     register_date = Column(DateTime)
 
+    projects = relationship('Project', secondary=project_user_association, back_populates='users')
+    task = relationship('Task')
+    comment = relationship('Comment')
+
     def __repr__(self):
         return '<User %r>' % self.nickname
 
@@ -50,12 +54,14 @@ class Task(Base):
     id = Column(Integer, primary_key=True)
     parent_id = Column(Integer, default=0, index=True)
     body = Column(String())
-    taskname = Column(String(140))
+    task_name = Column(String(140))
     timestamp = Column(DateTime)
     user_id = Column(Integer, ForeignKey('user.id'))
     project_id = Column(Integer, index=True)
     status = Column(String(10))
     depth = Column(Integer, default=0)
+
+    comment = relationship('Comment')
 
     def __repr__(self):
         return '<Task %r>' % self.body
@@ -65,8 +71,8 @@ class Comment(Base):
     __tablename__ = 'comment'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer)
-    task_id = Column(Integer)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    task_id = Column(Integer, ForeignKey("task.id"))
     timestamp = Column(DateTime)
     text = Column(String())
 
