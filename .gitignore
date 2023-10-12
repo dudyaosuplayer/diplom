@@ -1,0 +1,6 @@
+__pycache__
+venv
+.flake8
+
+.idea
+.vscode
