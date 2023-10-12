@@ -1,13 +1,15 @@
 from fastapi import FastAPI
 import uvicorn
 
+from utils.fastapi.router import add_routers
+
 
 app = FastAPI(
     title='Project Managing API',
     description='',
     version='1.0.0'
 )
-# app.include_router(router=router)
+add_routers(app)
 
 
 # Run the FastAPI application
