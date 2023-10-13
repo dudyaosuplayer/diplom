@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, Path, Query, HTTPException
 from typing import Annotated
 
-from db.database import db_dependencies
-from models.models import Project
-from schemas import ProjectCreate, ProjectResponse, ProjectUpdate
+from backend.db.database import db_dependencies
+from backend.models.models import Project
+from backend.schemas import ProjectCreate, ProjectResponse, ProjectUpdate
 
 from utils.fastapi.tags import Tags
 
