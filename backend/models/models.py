@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, SmallInteger, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship
 
-from backend.db.database import Base
+from db.database import Base
 
 ROLE_USER = 0
 ROLE_ADMIN = 1
@@ -20,13 +20,11 @@ class Project(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
     status = Column(String(10))
-    # owner = Column(Integer)  # user.id
-
     tasks = relationship('Task', lazy=True)
     users = relationship('User', secondary=project_user_association, back_populates="projects", lazy=True)
 
     def __repr__(self):
-        return '<Project %r have users %r>' % (self.name, self.users)
+        return f'Project(id={self.id}, name={self.name}, status={self.status})'
 
 
 class User(Base):
@@ -40,14 +38,13 @@ class User(Base):
     cookie = Column(String(8))
     role = Column(SmallInteger, default=ROLE_USER)
     register_date = Column(DateTime)
-
     projects = relationship('Project', secondary=project_user_association, back_populates='users', lazy=True)
-    # projects = relationship('Association', back_populates='user')
     tasks = relationship('Task', lazy=True)
     comment = relationship('Comment', lazy=True)
 
     def __repr__(self):
-        return '<User %r>' % self.nickname
+        return f'User(id={self.id}, nickname={self.nickname}, email={self.email}, p_hash={self.p_hash}, ' \
+               f'password={self.password}, cookie={self.cookie}, role={self.role}, register_date={self.register_date})'
 
 
 class Task(Base):
@@ -66,7 +63,9 @@ class Task(Base):
     comment = relationship('Comment', lazy=True)
 
     def __repr__(self):
-        return '<Task %r>' % self.body
+        return f'Task(id={self.id}, parent_id={self.parent_id}, body={self.body}, task_name={self.task_name}, ' \
+               f'timestamp={self.timestamp}, user_id={self.user_id}, project_id={self.project_id}, register_date={self.status}, ' \
+               f'status={self.status})'
 
 
 class Comment(Base):
@@ -79,6 +78,4 @@ class Comment(Base):
     text = Column(String())
 
     def __repr__(self):
-        return '<Comment %r>' % self.text
-
-
+        return f'Comment(id={self.id}, user_id={self.user_id}, task_id={self.task_id}, timestamp={self.timestamp}, text={self.text})'
