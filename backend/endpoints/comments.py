@@ -4,7 +4,8 @@ from fastapi import APIRouter, Path, HTTPException
 from typing import Annotated
 
 from db.database import db_dependencies
-from models.models import Comment, Task, User
+from auth.auth import auth_dependencies
+from models import Comment, Task, User
 from schemas import CommentResponse, CommentCreate
 
 from utils.fastapi.tags import Tags

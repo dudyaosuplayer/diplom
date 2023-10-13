@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
-from backend import schemas, models
+
+from models import User
+from schemas import Task, UserCreate, UserDelete
 
 
 def get_user_by_username(db: Session, username: str):
@@ -11,9 +13,9 @@ def get_user_by_username(db: Session, username: str):
         username (str): The username to search for.
 
     Returns:
-        models.User: The user object.
+        User: The user object.
     """
-    return db.query(models.User).filter(models.User.nickname == username).first()
+    return db.query(User).filter(User.nickname == username).first()
 
 
 def get_users(db: Session, skip: int = 0, limit: int = 100):
@@ -28,7 +30,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     Returns:
         list: A list of users.
     """
-    return db.query(models.User).offset(skip).limit(limit).all()
+    return db.query(User).offset(skip).limit(limit).all()
 
 
 def get_user_by_id(db: Session, user_id: int):
@@ -40,9 +42,9 @@ def get_user_by_id(db: Session, user_id: int):
         user_id (int): The user's ID.
 
     Returns:
-        models.User: The user object.
+        User: The user object.
     """
-    return db.query(models.User).filter(models.User.id == user_id).first()
+    return db.query(User).filter(User.id == user_id).first()
 
 
 def get_user_by_email(db: Session, user_email: str):
@@ -54,40 +56,40 @@ def get_user_by_email(db: Session, user_email: str):
         user_email (str): The user's email address to search for.
 
     Returns:
-        models.User: The user object.
+        User: The user object.
     """
-    return db.query(models.User).filter(models.User.email == user_email).first()
+    return db.query(User).filter(User.email == user_email).first()
 
 
-def create_user(db: Session, user: schemas.UserCreate):
+def create_user(db: Session, user: UserCreate):
     """
     Create a new user and add it to the database.
 
     Args:
         db (Session): The database session.
-        user (schemas.UserCreate): The user data to create.
+        user (UserCreate): The user data to create.
 
     Returns:
-        models.User: The created user object.
+        User: The created user object.
     """
     fake_hashed_password = user.password
-    db_user = models.User(nickname=user.nickname, role=user.role, password=fake_hashed_password)
+    db_user = User(nickname=user.nickname, role=user.role, password=fake_hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
 
 
-def delete_user(db: Session, user: schemas.UserDelete):
+def delete_user(db: Session, user: UserDelete):
     """
     Delete a user from the database.
 
     Args:
         db (Session): The database session.
-        user (schemas.UserDelete): The user data to delete.
+        user (UserDelete): The user data to delete.
 
     Returns:
-        models.User: The deleted user object.
+        User: The deleted user object.
     """
     db_user = get_user_by_username(db, username=user.username)
     db.delete(db_user)
@@ -95,17 +97,17 @@ def delete_user(db: Session, user: schemas.UserDelete):
     return db_user
 
 
-def update_user(db: Session, user: schemas.UserCreate, user_id: int):
+def update_user(db: Session, user: UserCreate, user_id: int):
     """
     Update a user's information in the database.
 
     Args:
         db (Session): The database session.
-        user (schemas.UserCreate): The updated user data.
+        user (UserCreate): The updated user data.
         user_id (int): The user's ID to update.
 
     Returns:
-        models.User: The updated user object.
+        User: The updated user object.
     """
     db_user = get_user_by_id(db, user_id=user_id)
     db_user.username = user.username
@@ -126,9 +128,9 @@ def get_task(db: Session, task_id: int):
     - **task_id** (int): The task's ID to update.
 
     Returns:
-    - **models.Task**: The updated task object.
+    - **Task**: The updated task object.
     """
-    return db.query(models.Task).filter(models.Task.id == task_id).first()
+    return db.query(Task).filter(Task.id == task_id).first()
 
 
 def assign_task_to_user(db: Session, task_id: int, assigned_user_id: int):
@@ -143,8 +145,8 @@ def assign_task_to_user(db: Session, task_id: int, assigned_user_id: int):
     Returns:
     - **bool**: True, if successfully, else False.
     """
-    task = db.query(models.Task).filter(models.Task.id == task_id).first()
-    user = db.query(models.User).filter(models.User.id == assigned_user_id).first()
+    task = db.query(Task).filter(Task.id == task_id).first()
+    user = db.query(User).filter(User.id == assigned_user_id).first()
 
     if task and user:
         task.user_id = assigned_user_id

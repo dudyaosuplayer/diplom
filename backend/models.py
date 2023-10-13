@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, String, SmallInteger, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship
 
-from backend.db.database import Base
+from db.database import Base
 
-# ROLE_USER = 0
-# ROLE_ADMIN = 1
+ROLE_USER = 0
+ROLE_ADMIN = 1
 
 project_user_association = Table(
     'project_user_association',
@@ -78,5 +78,3 @@ class Comment(Base):
 
     def __repr__(self):
         return '<Comment %r>' % self.text
-
-

@@ -2,7 +2,8 @@ from fastapi import APIRouter, Path, HTTPException
 from typing import Annotated
 
 from db.database import db_dependencies
-from models.models import Project
+from auth.auth import auth_dependencies
+from models import Project, User
 from schemas import ProjectCreate, ProjectResponse, ProjectUpdate
 
 from utils.fastapi.tags import Tags
@@ -22,7 +23,7 @@ router = APIRouter(
 def get_projects(db: db_dependencies, user: auth_dependencies):
     if user.role == 'Product Manager':
         try:
-            projects = db.query(models.Project).all()
+            projects = db.query(Project).all()
             return projects
         except Exception as e:
             raise e
@@ -33,12 +34,12 @@ def get_projects(db: db_dependencies, user: auth_dependencies):
 @router.post(
     "/create_project",
     description='This method creates project',
-    response_model=schemas.ProjectCreate
+    response_model=ProjectCreate
 )
-def create_project(project_data: schemas.ProjectCreate, db: db_dependencies, user: auth_dependencies):
+def create_project(project_data: ProjectCreate, db: db_dependencies, user: auth_dependencies):
     if user.role == 'Product Manager':
         try:
-            new_project = models.Project(name=project_data.name, status=project_data.status)
+            new_project = Project(name=project_data.name, status=project_data.status)
 
             db.add(new_project)
             db.commit()
@@ -53,7 +54,7 @@ def create_project(project_data: schemas.ProjectCreate, db: db_dependencies, use
 
 @router.get(
     "/get_project/{project_id}",
-    response_model=schemas.ProjectResponse,
+    response_model=ProjectResponse,
     description='This method returns a project by ID',
 )
 def get_project(
@@ -62,12 +63,12 @@ def get_project(
         db: db_dependencies
 ):
     try:
-        project = db.query(models.Project).filter(models.Project.id == project_id).first()
+        project = db.query(Project).filter(Project.id == project_id).first()
 
         if not project:
             raise HTTPException(status_code=404, detail="Project not found")
 
-        response_project = schemas.ProjectResponse(
+        response_project = ProjectResponse(
             id=project.id,
             name=project.name,
             status=project.status,
@@ -85,13 +86,13 @@ def get_project(
 def update_project(
         project_id: Annotated[
             int, Path(..., title="Project ID", description="The ID of project to retrieve", ge=0)],
-        project_data: schemas.ProjectUpdate,
+        project_data: ProjectUpdate,
         db: db_dependencies,
         user: auth_dependencies
 ):
     if user.role == 'Product Manager':
         try:
-            project = db.query(models.Project).filter(models.Project.id == project_id).first()
+            project = db.query(Project).filter(Project.id == project_id).first()
 
             if not project:
                 raise HTTPException(status_code=404, detail="Project not found")
@@ -123,8 +124,8 @@ def add_user_to_project(
         raise HTTPException(status_code=403,
                             detail="Permission denied. You must be a Product Manager to add users to a project.")
 
-    project = db.query(models.Project).filter(models.Project.id == project_id).first()
-    user = db.query(models.User).filter(models.User.id == user_id).first()
+    project = db.query(Project).filter(Project.id == project_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
 
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -147,7 +148,7 @@ def get_users_attached_to_project(
         db: db_dependencies,
         project_id: int = Path(..., description="The ID of the project")
 ):
-    project = db.query(models.Project).filter(models.Project.id == project_id).first()
+    project = db.query(Project).filter(Project.id == project_id).first()
 
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")

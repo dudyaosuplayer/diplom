@@ -2,6 +2,9 @@ from fastapi import APIRouter, Depends, Path, Query
 
 from utils.fastapi.tags import Tags
 
+from auth.auth import auth_dependencies
+from db.database import db_dependencies
+
 
 router = APIRouter()
 

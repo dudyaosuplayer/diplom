@@ -2,8 +2,8 @@ from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Annotated
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from backend.db.database import get_db
-from backend.db_queries import user_queries
+from db.database import get_db
+from db_queries import user_queries
 
 # from user import db_queries
 

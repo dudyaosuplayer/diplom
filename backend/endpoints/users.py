@@ -1,10 +1,10 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Path, Query, HTTPException
-from backend.db.database import db_dependencies
-from backend.auth_dep import auth_dependencies
-from backend import schemas, models
-from backend.db_queries import user_queries
+from db.database import db_dependencies
+from auth_dep import auth_dependencies
+import schemas, models
+from db_queries import user_queries
 
 from utils.fastapi.tags import Tags
 
