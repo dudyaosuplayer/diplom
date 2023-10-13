@@ -5,3 +5,4 @@ class Tags(str, Enum):
     projects = 'Projects'
     tasks = 'Tasks'
     users = 'Users'
+    comments = 'Comments'
