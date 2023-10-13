@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, constr
 
 
@@ -16,6 +17,20 @@ class ProjectUpdate(BaseModel):
     name: str
     status: str
 
+
+class CommentResponse(BaseModel):
+    id: int
+    user_id: int
+    task_id: int
+    timestamp: datetime
+    text: str
+
+
+class CommentCreate(BaseModel):
+    user_id: int
+    task_id: int
+    timestamp: datetime
+    text: str
 
 class UserCreate(BaseModel):
     nickname: str
@@ -38,3 +53,4 @@ class Task(BaseModel):
     user_id: int
     project_id: int
     status: str
+
