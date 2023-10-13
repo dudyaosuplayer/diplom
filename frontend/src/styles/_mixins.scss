@@ -1,0 +1,17 @@
+@mixin fonts($color, $size, $weight, $height) {
+    color: $color;
+    font-size: $size;
+    font-weight: $weight;
+    line-height: $height;
+}
+
+@mixin flexJustify($justify) {
+    display: flex;
+    justify-content: $justify;
+}
+
+@mixin gridRowColumn($row, $column) {
+    display: grid;
+    row-gap: $row;
+    column-gap: $column;
+}

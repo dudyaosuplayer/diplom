@@ -1,0 +1,65 @@
+.agile {
+    display: flex;
+    justify-content: space-between;
+}
+
+.agileItem {
+    width: 347px;
+    background: var(--cool-gray-20, #DDE1E6);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+}
+
+.agileItem__title {
+    color: var(--cool-gray-90, #21272A);
+    /* Body/M */
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 22.4px */
+}
+
+.agileTask {
+    border: 1px solid var(--cool-gray-20, #DDE1E6);
+    background: var(--default-white, #FFF);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    img {
+        height: 180px;
+    }
+}
+
+.agileTask__text-small {
+    color: var(--cool-gray-90, #21272A);
+    /* Body/XS */
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 16.8px */
+}
+
+.agileTask__text {
+    color: var(--cool-gray-90, #21272A);
+    /* Body/M */
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 140%; /* 22.4px */
+}
+
+.agileItem__create {
+    display: flex;
+    column-gap: 8px;
+    align-items: center;
+    cursor: pointer;
+    &:hover {
+        background: var(--cool-gray-20, #e5ebf1);
+    }
+}

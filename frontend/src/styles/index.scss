@@ -1,0 +1,43 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body * {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--default-white, #FFF);
+    font-family: 'Roboto', sans-serif;
+    font-style: normal;
+    position: relative;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.App {
+    display: flex;
+    max-width: 1440px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+.App__left {
+    border-right: 1px solid var(--cool-gray-20, #DDE1E6);
+}
+
+.App__center {
+    padding: 24px;
+    width: -webkit-fill-available;
+}
+
+@media (max-width: 920px) {
+    .container {
+        width: 90vw;
+    }
+}
