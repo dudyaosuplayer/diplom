@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Path, Query
 
-from backend.utils.fastapi.tags import Tags
+from utils.fastapi.tags import Tags
 
 router = APIRouter()
 

@@ -1,10 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
 
-import os
-print(os.getcwd())
-
-from backend.utils.fastapi.router import add_routers
+from utils.fastapi.router import add_routers
 
 app = FastAPI(
     title='Project Managing API',

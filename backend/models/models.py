@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, SmallInteger, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship
 
-from backend.db.database import Base
+from db.database import Base
 
 ROLE_USER = 0
 ROLE_ADMIN = 1

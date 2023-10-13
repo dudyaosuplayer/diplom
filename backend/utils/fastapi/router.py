@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from backend.endpoints import projects, tasks, users
+from endpoints import projects, tasks, users
 
 def add_routers(app: FastAPI):
     app.include_router(projects.router)
