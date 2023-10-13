@@ -1,13 +1,13 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
 from fastapi import Depends
 from typing import Annotated
-from backend.db.config import settings
+import backend.db.config as config
 
 engine = create_engine(
-    url=settings.DATABASE_URL_psycopg,
-    echo=True,
+    url=f"postgresql+psycopg://{config.DB_USER}:{config.DB_PASS}@{config.DB_HOST}:{config.DB_PORT}/{config.DB_NAME}",
+    echo=False,
 )
 
 Session = sessionmaker(bind=engine)
@@ -42,10 +42,3 @@ def get_db() -> Session:
 
 
 db_dependencies = Annotated[Session, Depends(get_db)]
-
-# db_1: Session = next(get_db())
-
-# result = db_1.execute(text('SELECT version()'))
-# version = result.scalar()
-# print(version)
-# db_1.close()
