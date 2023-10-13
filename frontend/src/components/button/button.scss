@@ -1,0 +1,27 @@
+@import "../../styles/variables";
+@import "../../styles/_mixins.scss";
+
+.button {
+    border-radius: 16px;
+    background: $blue3;
+    padding: 16px;
+    border: none;
+    cursor: pointer;
+    span {
+        @include fonts($white, 16px, 700, 112%);
+        text-align: center;
+        font-family: 'Ubuntu', sans-serif;
+        font-style: normal;
+        letter-spacing: 0.32px;
+    }
+    &:hover {
+        background: $hover-blue;
+    }
+}
+
+.button__pink {
+    background: rgba(217, 55, 55, 0.80);
+    &:hover {
+        background: rgba(217, 55, 55, 0.60);;
+    }
+}

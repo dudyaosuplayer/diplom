@@ -1,0 +1,71 @@
+@import "_variables.scss";
+@import "_mixins.scss";
+
+
+.input {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+}
+
+.input__field {
+    border-radius: 6px;
+    border: 1px solid rgba(128, 128, 128, 0.20);
+    background-color: #F9F5E3;
+    /* width: 297px; */
+    height: 40px;
+    padding: 0 16px;
+    outline: none;
+    @include fonts(#1A202C, 14px, 400, 100%);
+    &::placeholder {
+        @include fonts(#808080, 14px, 400, 100%);
+    }
+}
+
+/* .input__field-medium {
+    width: 401.33px;
+}
+
+.input__field-large {
+    width: 608px;
+} */
+
+.input__field:focus {
+    border: 2px solid #5B35D5;
+    background-color: #F9F5E3;
+    background-image: none;
+}
+
+.input__field-green {
+    border: 1px solid rgba(128, 128, 128, 0.20);
+    background-image: none;
+   // background-image: url(../icons/round-ok.svg);
+    background-repeat: no-repeat;
+    background-position-x: right;
+    background-position-y: center;
+    background-origin: content-box;
+}
+
+.input__field-red {
+    border: 2px solid #FF5631;
+  //  background-image: url(../icons/round-mistake.svg);
+    background-repeat: no-repeat;
+    background-position-x: right;
+    background-position-y: center;
+    background-origin: content-box;
+}
+
+.input__label {
+    @include fonts(#1A202C, 16px, 500, 100%);
+    span {
+        color: #F00;
+    }
+}
+
+.input__option {
+    @include fonts(#1A202C, 14px, 400, 100%);
+}
+
+.input_error {
+    @include fonts(#FF5631, 16px, 500, 100%);
+}

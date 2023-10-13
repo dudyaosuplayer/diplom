@@ -1,0 +1,13 @@
+.home {
+    padding: 40px 0;
+    ol {
+        display: flex;
+        flex-direction: column;
+        margin: 10px 0;
+        row-gap: 10px;
+        li {
+            margin-left: 20px;
+        }
+    }
+}
+

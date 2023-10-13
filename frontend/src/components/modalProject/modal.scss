@@ -1,0 +1,48 @@
+@import "../../styles/_variables.scss";
+@import "../../styles/_mixins.scss";
+
+.modal {
+    position: absolute;
+    z-index: 10;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.modal__message {
+    width: 800px;
+    background: #FFF;
+    padding: 16px;
+    position: relative;
+    top: 18vh;
+}
+
+.modal__title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    p {
+        @include fonts(#1C1C1E, 24px, 700, 147.4%);
+        letter-spacing: 0.32px;
+    }
+    div {
+        cursor: pointer;
+        font-size: 20px;
+    }
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+}
+
+.form__buttons {
+    text-align: right;
+}
