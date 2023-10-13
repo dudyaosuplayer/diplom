@@ -10,7 +10,7 @@ engine = create_engine(
     echo=False,
 )
 
-Session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=engine, autoflush=False)
 
 Base = declarative_base()
 

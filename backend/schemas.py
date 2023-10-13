@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
 
 
 class ProjectCreate(BaseModel):
@@ -14,4 +14,27 @@ class ProjectResponse(BaseModel):
 
 class ProjectUpdate(BaseModel):
     name: str
+    status: str
+
+
+class UserCreate(BaseModel):
+    nickname: str
+    role: str
+    password: constr(min_length=6, max_length=8)
+
+    class Config:
+        from_attributes = True
+
+
+class UserDelete(BaseModel):
+    nickname: str
+    password: str
+
+
+class Task(BaseModel):
+    id: int
+    body: str
+    task_name: str
+    user_id: int
+    project_id: int
     status: str

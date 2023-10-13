@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Path, Query, HTTPException
+from fastapi import APIRouter, Path, HTTPException
 from typing import Annotated
 
 from db.database import db_dependencies
@@ -9,7 +9,7 @@ from utils.fastapi.tags import Tags
 
 router = APIRouter(
     prefix='/projects',
-    tags=[[Tags.projects]]
+    tags=[Tags.projects]
 )
 
 
@@ -19,33 +19,41 @@ router = APIRouter(
     "/get_projects",
     description='This method returns all projects',
 )
-def get_projects(db: db_dependencies):
-    try:
-        projects = db.query(Project).all()
-        return projects
-    except Exception as e:
-        raise e
+def get_projects(db: db_dependencies, user: auth_dependencies):
+    if user.role == 'Product Manager':
+        try:
+            projects = db.query(models.Project).all()
+            return projects
+        except Exception as e:
+            raise e
+    else:
+        raise HTTPException(status_code=403, detail="Access denied: You are not a Product Manager")
 
 
 @router.post(
     "/create_project",
     description='This method creates project',
+    response_model=schemas.ProjectCreate
 )
-def create_project(project_data: ProjectCreate, db: db_dependencies):
-    try:
-        new_project = Project(name=project_data.name, status=project_data.status)
+def create_project(project_data: schemas.ProjectCreate, db: db_dependencies, user: auth_dependencies):
+    if user.role == 'Product Manager':
+        try:
+            new_project = models.Project(name=project_data.name, status=project_data.status)
 
-        db.add(new_project)
-        db.commit()
+            db.add(new_project)
+            db.commit()
 
-        return new_project
-    except Exception as e:
-        raise e
+            return new_project
+        except Exception as e:
+            raise e
+
+    else:
+        raise HTTPException(status_code=403, detail="Access denied: You are not a Product Manager")
 
 
 @router.get(
     "/get_project/{project_id}",
-    response_model=ProjectResponse,
+    response_model=schemas.ProjectResponse,
     description='This method returns a project by ID',
 )
 def get_project(
@@ -54,12 +62,12 @@ def get_project(
         db: db_dependencies
 ):
     try:
-        project = db.query(Project).filter(Project.id == project_id).first()
+        project = db.query(models.Project).filter(models.Project.id == project_id).first()
 
         if not project:
             raise HTTPException(status_code=404, detail="Project not found")
 
-        response_project = ProjectResponse(
+        response_project = schemas.ProjectResponse(
             id=project.id,
             name=project.name,
             status=project.status,
@@ -77,20 +85,73 @@ def get_project(
 def update_project(
         project_id: Annotated[
             int, Path(..., title="Project ID", description="The ID of project to retrieve", ge=0)],
-        project_data: ProjectUpdate,
-        db: db_dependencies
+        project_data: schemas.ProjectUpdate,
+        db: db_dependencies,
+        user: auth_dependencies
 ):
-    try:
-        project = db.query(Project).filter(Project.id == project_id).first()
+    if user.role == 'Product Manager':
+        try:
+            project = db.query(models.Project).filter(models.Project.id == project_id).first()
 
-        if not project:
-            raise HTTPException(status_code=404, detail="Project not found")
+            if not project:
+                raise HTTPException(status_code=404, detail="Project not found")
 
-        project.name = project_data.name
-        project.status = project_data.status
+            project.name = project_data.name
+            project.status = project_data.status
 
-        db.commit()
+            db.commit()
 
-        return {"message": "Project updated successfully"}
-    except Exception as e:
-        raise e
+            return {"message": "Project updated successfully"}
+        except Exception as e:
+            raise e
+
+    else:
+        raise HTTPException(status_code=403, detail="Access denied: You are not a Product Manager")
+
+
+@router.post(
+    "/add_user/{project_id}/{user_id}",
+    description='Add user to project'
+)
+def add_user_to_project(
+        db: db_dependencies,
+        current_user: auth_dependencies,
+        project_id: int = Path(..., description="The ID of the project"),
+        user_id: int = Path(..., description="The ID of the user"),
+):
+    if current_user.role != "Product Manager":
+        raise HTTPException(status_code=403,
+                            detail="Permission denied. You must be a Product Manager to add users to a project.")
+
+    project = db.query(models.Project).filter(models.Project.id == project_id).first()
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    project.users.append(user)
+    db.commit()
+    db.refresh(project)
+
+    return {"message": "User added to project successfully"}
+
+
+@router.get(
+    "/get_users/{project_id}",
+    description='Get users attached to a project'
+)
+def get_users_attached_to_project(
+        db: db_dependencies,
+        project_id: int = Path(..., description="The ID of the project")
+):
+    project = db.query(models.Project).filter(models.Project.id == project_id).first()
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    users = project.users
+
+    return users
