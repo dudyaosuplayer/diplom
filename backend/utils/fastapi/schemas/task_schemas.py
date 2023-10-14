@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -8,20 +9,20 @@ class TaskResponse(BaseModel):
     parent_id: int
     body: str
     task_name: str
-    timestamp: datetime
-    user_id: int
+    timestamp: Optional[datetime] = None
+    user_id: Optional[int] = None
     project_id: int
-    status: str
-    depth: int
+    status: Optional[str] = None
+    depth: Optional[int] = None
 
 
 class TaskCreate(BaseModel):
     parent_id: int
     body: str
     task_name: str
-    timestamp: datetime
-    user_id: int
+    timestamp: Optional[datetime] = None
+    user_id: Optional[int] = None
     project_id: int
-    status: str
-    depth: int
+    status: Optional[str] = None
+    depth: Optional[int] = None
 
