@@ -9,7 +9,7 @@ import home from '../../icons/home.svg';
 import document from '../../icons/document.svg';
 import folders from '../../icons/folders.svg';
 import pictures from '../../icons/pictures.svg';
-import task from '../../icons/task-list.svg';
+//import task from '../../icons/task-list.svg';
 
 const Navigation: React.FC = () => {
     let location = useLocation();
@@ -18,8 +18,8 @@ const Navigation: React.FC = () => {
                     { 'navigation__active': location.pathname === '/' });
     let classesP = clsx('navigation__item',
                     { 'navigation__active': location.pathname === '/projects' });
-    let classesT = clsx('navigation__item',
-                    { 'navigation__active': location.pathname === '/tasks' });
+    /* let classesT = clsx('navigation__item',
+                    { 'navigation__active': location.pathname === '/tasks' }); */
     let classesA = clsx('navigation__item',
                     { 'navigation__active': location.pathname === '/analitics' });   
     let classesAg = clsx('navigation__item',
@@ -45,13 +45,6 @@ const Navigation: React.FC = () => {
                     <div className={classesP}>
                         <img src={document} alt="" />
                         <p>Проекты</p>
-                    </div>    
-                </Link>
-
-                <Link to="/tasks" >
-                    <div className={classesT}>
-                        <img src={task} alt="" />
-                        <p>Задачи</p>
                     </div>    
                 </Link>
 

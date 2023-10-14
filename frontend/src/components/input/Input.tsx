@@ -8,7 +8,7 @@ interface Props {
     label: string,
     required: boolean,
     type: "text" | "email" | "number",
-    placeholder: string,
+    placeholder?: string,
     name: string,
     errors: any,
     values: any,

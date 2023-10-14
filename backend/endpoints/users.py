@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Path, Query, HTTPException
 
-from backend.auth_dep import auth_dependencies
+from backend.auth.auth import auth_dependencies
 from backend.db.database import db_dependencies
 from backend.db.queries.users import get_users, get_user_by_username
 

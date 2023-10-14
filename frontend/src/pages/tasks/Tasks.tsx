@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { createPortal } from 'react-dom';
 
 import Button from "../../components/button/Button";
-import ModalTasks from "../../components/modalTasks/ModalTasks";
+import ModalTasks from "../../components/modalTasksCreate/ModalTasks";
 import Table from "../../components/table/Table";
 
 import "../../styles/main.scss";
@@ -16,15 +16,15 @@ const dataInfo = [
         deadline: '22',
         executor: 'tom',
         priority: 'высокий',
-        status: 'work'
+        status: 'в работе'
     },
     {
         name: 'Неоджира',
         created: '22', 
         deadline: '30',
         executor: 'den',
-        priority: 'низкии',
-        status: 'done'
+        priority: 'низкий',
+        status: 'завершена'
     },
     {
         name: 'Something',
@@ -32,7 +32,7 @@ const dataInfo = [
         deadline: '25',
         executor: 'wally',
         priority: 'средний',
-        status: 'work'
+        status: 'на проверке'
     }
 ];
 

@@ -77,6 +77,7 @@ def create_task(user_id: int,
         parent_task_exists = get_task_by_task_id(task_id, db)
         if not project_exists or not parent_task_exists:
             raise HTTPException(status_code=404, detail="Project or parent task not found")
+        # Создание новой задачи и добавление ее в базу данных
         new_task = Task(id=task_id,
                         body=body,
                         task_name=task_name,

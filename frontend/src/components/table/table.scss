@@ -10,6 +10,7 @@
         height: 40px; 
         border-bottom: 1px solid #E2E8F0;
         background: rgba(217, 217, 217, 0.00);
+        cursor: pointer;
     }
     th {
         color: var(--cool-gray-100, #121619);
@@ -38,5 +39,23 @@
         font-style: normal;
         font-weight: 400;
         line-height: 140%; /* 19.6px */
+        padding: 0 5px;
+        &:hover {
+            background-color: #f3f4f7;
+        }
+        a {
+            color: var(--cool-gray-100, #121619);
+            font-weight: 400;
+            line-height: 140%; /* 19.6px */
+            text-decoration: none;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+    .table__edit {
+        font-weight: 500;
+        text-decoration: underline;
     }
 }
+
