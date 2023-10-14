@@ -4,7 +4,7 @@ from fastapi import Depends
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-from db import config
+from backend.db import config
 
 
 engine = create_engine(

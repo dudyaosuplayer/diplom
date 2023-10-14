@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, Path, Query
 
-from auth.auth import auth_dependencies
-from db.database import db_dependencies
-
-from utils.fastapi.tags import Tags
+from backend.auth.auth import auth_dependencies
+from backend.db.database import db_dependencies
+from backend.utils.fastapi.tags import Tags
 
 
 router = APIRouter(prefix='/tasks', tags=[Tags.tasks])

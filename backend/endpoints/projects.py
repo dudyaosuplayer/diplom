@@ -2,11 +2,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Path, HTTPException
 
-from auth.auth import auth_dependencies
-from db.database import db_dependencies
-from models.models import Project, User
-from utils.fastapi.schemas.project_schemas import ProjectCreate, ProjectResponse, ProjectUpdate
-from utils.fastapi.tags import Tags
+from backend.auth.auth import auth_dependencies
+from backend.db.database import db_dependencies
+from backend.models.models import Project, User
+from backend.utils.fastapi.schemas.project_schemas import ProjectCreate, ProjectResponse, ProjectUpdate
+from backend.utils.fastapi.tags import Tags
 
 router = APIRouter(prefix='/projects', tags=[Tags.projects])
 

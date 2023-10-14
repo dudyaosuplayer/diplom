@@ -4,7 +4,7 @@ import sys
 from fastapi import FastAPI
 import uvicorn
 
-from utils.fastapi.router import add_routers
+from backend.utils.fastapi.router import add_routers
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 

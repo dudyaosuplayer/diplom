@@ -4,8 +4,8 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 
-from db.queries.db_queries import get_user_by_username
-from db.database import get_db
+from backend.db.queries.db_queries import get_user_by_username
+from backend.db.database import get_db
 
 
 security = HTTPBasic()
