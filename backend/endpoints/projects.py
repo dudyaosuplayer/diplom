@@ -30,11 +30,10 @@ def get_projects(db: db_dependencies, user: auth_dependencies):
 
 
 @router.post("/create_project", response_model=ProjectCreate, description='This method creates project')
-
 def create_project(project_name: str, project_status: ProjectStatus, db: db_dependencies, user: auth_dependencies):
     try:
         if not project_name or project_status:
-            raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Some field is empty")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Some field is empty")
         if user.role == ProjectRole.ProductManager:
             project = get_project_by_name(project_name, db)
             if project:
