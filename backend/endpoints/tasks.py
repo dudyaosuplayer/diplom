@@ -70,11 +70,14 @@ def create_task(project_id: Annotated[int, Path(..., title="Project ID", descrip
         if not project_exists or not parent_task_exists:
             raise HTTPException(status_code=404, detail="Project or parent task not found")
         # Создание новой задачи и добавление ее в базу данных
-        new_task = Task(project_id=project_id,
-                        parent_id=task_id,
+        new_task = Task(project_id=task_request.project_id,
+                        parent_id=task_request.parent_id,
                         body=task_request.body,
-                        task_name=task_request.task_name)
-                        # Другие поля задачи, которые необходимо заполнить
+                        task_name=task_request.task_name,
+                        timestamp=task_request.timestamp,
+                        user_id=task_request.user_id,
+                        status=task_request.status,
+                        depth=task_request.depth)
         db.add(new_task)
         db.commit()
         db.refresh(new_task)
