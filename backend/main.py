@@ -1,3 +1,10 @@
+from time import sleep
+sleep(30.0)
+
+import os
+print(os.getcwd())
+
+
 from fastapi import FastAPI
 import uvicorn
 
