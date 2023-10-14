@@ -8,6 +8,7 @@ from backend.models.models import Project, User
 from backend.utils.fastapi.schemas.project_schemas import ProjectCreate, ProjectResponse, ProjectUpdate
 from backend.utils.fastapi.tags import Tags
 from backend.utils.users import ProjectRole
+from backend.utils.statuses import ProjectStatus
 from backend.db.queries.db_queries import get_projects, get_project_by_name
 
 router = APIRouter(prefix='/projects', tags=[Tags.projects])
@@ -28,7 +29,7 @@ def get_projects(db: db_dependencies, user: auth_dependencies):
 
 
 @router.post("/create_project", response_model=ProjectCreate, description='This method creates project')
-def create_project(project_name: str, project_status: str, db: db_dependencies, user: auth_dependencies):
+def create_project(project_name: str, project_status: ProjectStatus, db: db_dependencies, user: auth_dependencies):
     try:
         if user.role == ProjectRole.ProductManager:
             project = get_project_by_name(project_name, db)
