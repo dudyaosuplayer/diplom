@@ -1,5 +1,7 @@
 import React, { useMemo } from "react";
 
+import TableRow from "../tableRow/TableRow";
+
 import "./table.scss";
 
 import arrow from '../../icons/arrow-down.svg';
@@ -52,20 +54,15 @@ const Table: React.FC<Props> = (props) => {
                                     </div>
                                 </th>
                     })}
+                    <th><div></div></th>
                 </tr>
             </thead>
 
             <tbody>
                 {
                     array.map((item, index) => {
-                    return <tr className="table__row" key={index}>
-                            {
-                                Object.values(item).map((el, index) => {
-                                    return <td key={index}>{String(el)}</td>
-                                })
-                            }
-                        </tr>}
-                    )
+                    return <TableRow data={item} key={index} />
+                    })
                 }
             </tbody>
         </table>

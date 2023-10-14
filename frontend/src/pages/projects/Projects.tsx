@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { createPortal } from 'react-dom';
 
 import Button from "../../components/button/Button";
-import ModalProject from "../../components/modalProject/ModalProject";
+import ModalProject from "../../components/modalProjectCreate/ModalProject";
 import Table from "../../components/table/Table";
 
 import "../../styles/main.scss";
