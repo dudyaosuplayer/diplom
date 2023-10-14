@@ -9,7 +9,7 @@ from backend.db.queries.user_queries import get_users, get_user_by_username, get
 from backend.models.models import Project, Task
 from backend.utils.fastapi.tags import Tags
 from backend.utils.fastapi.schemas.user_schemas import User, UserCreate, UserDelete
-from backend.utils.fastapi.schemas.task_schemas import TaskSchema
+from backend.utils.fastapi.schemas.task_schemas import TaskResponse
 from backend.utils.users import ProjectRole
 
 
@@ -87,7 +87,7 @@ def assign_task(task_id: int,
     return {"detail": f"Task with ID {task_id} assigned to user width ID {assigned_user_id} successful!"}
 
 
-@router.get("/{user_id}/task", response_model=TaskSchema)
+@router.get("/{user_id}/task", response_model=TaskResponse)
 def get_task_for_user(user_id: int, db: db_dependencies):
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:
