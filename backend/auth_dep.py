@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from backend.db.database import get_db
-from backend.db.queries.user_queries import get_user_by_username
+from backend.db.queries.users import get_user_by_username
 
 
 security = HTTPBasic()
