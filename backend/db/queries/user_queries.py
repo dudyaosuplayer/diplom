@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from models.models import User
+from models.models import User, Task
 from utils.fastapi.schemas.user_schemas import UserCreate, UserDelete
 from utils.fastapi.schemas.task_schemas import TaskSchema
 

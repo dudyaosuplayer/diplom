@@ -10,6 +10,7 @@ from utils.fastapi.tags import Tags
 
 router = APIRouter(prefix='/projects', tags=[Tags.projects])
 
+
 # TODO: Прописать документацию и валидацию для всех эндпоинтов связанных с Project
 
 @router.get("/get_projects", description='This method returns all projects')
@@ -38,8 +39,10 @@ def create_project(project_data: ProjectCreate, db: db_dependencies, user: auth_
         raise HTTPException(status_code=403, detail="Access denied: You are not a Product Manager")
 
 
-@router.get("/get_project/{project_id}", response_model=ProjectResponse, description='This method returns a project by ID')
-def get_project(project_id: Annotated[int, Path(..., title="Project ID", description="The ID of the project to retrieve", ge=0)],
+@router.get("/get_project/{project_id}", response_model=ProjectResponse,
+            description='This method returns a project by ID')
+def get_project(project_id: Annotated[
+    int, Path(..., title="Project ID", description="The ID of the project to retrieve", ge=0)],
                 db: db_dependencies):
     try:
         project = db.query(Project).filter(Project.id == project_id).first()
@@ -56,10 +59,11 @@ def get_project(project_id: Annotated[int, Path(..., title="Project ID", descrip
 
 
 @router.put("/update_project/{project_id}", description='This method updates the name and status of a project by ID')
-def update_project(project_id: Annotated[int, Path(..., title="Project ID", description="The ID of project to retrieve", ge=0)],
-                   project_data: ProjectUpdate,
-                   db: db_dependencies,
-                   user: auth_dependencies):
+def update_project(
+        project_id: Annotated[int, Path(..., title="Project ID", description="The ID of project to retrieve", ge=0)],
+        project_data: ProjectUpdate,
+        db: db_dependencies,
+        user: auth_dependencies):
     if user.role == 'Product Manager':
         try:
             project = db.query(Project).filter(Project.id == project_id).first()

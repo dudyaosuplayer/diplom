@@ -6,16 +6,19 @@ from db.database import Base
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
+
 project_user_association = Table(
     'project_user_association',
     Base.metadata,
     Column('project_id', Integer, ForeignKey('project.id', ondelete='CASCADE')),
-    Column('user_id', Integer, ForeignKey('user.id', ondelete='CASCADE'))
+    Column('user_id', Integer, ForeignKey('user.id', ondelete='CASCADE')),
+    # extend_existing=True
 )
 
 
 class Project(Base):
     __tablename__ = 'project'
+    # __table_args__ = {'schema': 'public', 'extend_existing': True}
 
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
@@ -30,6 +33,7 @@ class Project(Base):
 
 class User(Base):
     __tablename__ = 'user'
+    # __table_args__ = {'schema': 'public', 'extend_existing': True}
 
     id = Column(Integer, primary_key=True)
     nickname = Column(String(64), index=True, unique=True)
@@ -50,6 +54,7 @@ class User(Base):
 
 class Task(Base):
     __tablename__ = 'task'
+    # __table_args__ = {'schema': 'public', 'extend_existing': True}
 
     id = Column(Integer, primary_key=True)
     parent_id = Column(Integer, default=0, index=True)
@@ -69,6 +74,7 @@ class Task(Base):
 
 class Comment(Base):
     __tablename__ = 'comment'
+    # __table_args__ = {'schema': 'public', 'extend_existing': True}
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id", ondelete='CASCADE'))
