@@ -28,6 +28,8 @@ def get_projects(db: db_dependencies, user: auth_dependencies):
 @router.post("/create_project", response_model=ProjectCreate, description='This method creates project')
 def create_project(project_data: ProjectCreate, db: db_dependencies, user: auth_dependencies):
     if user.role == 'Product Manager':
+        if not project_data.name:
+            raise HTTPException(status_code=422, detail="Введите название проекта")
         try:
             new_project = Project(name=project_data.name, status=project_data.status)
             db.add(new_project)
