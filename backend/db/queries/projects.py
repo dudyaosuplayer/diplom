@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from backend.models.models import Project
 
 
-def get_projects(db: Session) -> Project:
+def get_all_projects(db: Session) -> Project:
     return db.query(Project).all()
 
 

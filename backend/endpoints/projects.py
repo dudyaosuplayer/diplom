@@ -10,6 +10,7 @@ from backend.utils.fastapi.tags import Tags
 from backend.utils.users import ProjectRole
 from backend.utils.statuses import ProjectStatus
 from backend.db.queries import projects as projs
+from backend.db.queries.projects import get_all_projects
 from backend.db.queries.users import get_user_by_id, get_users_from_project
 
 router = APIRouter(prefix='/projects', tags=[Tags.projects])
@@ -21,7 +22,7 @@ router = APIRouter(prefix='/projects', tags=[Tags.projects])
 def get_projects(db: db_dependencies, user: auth_dependencies):
     try:
         if user.role == ProjectRole.ProductManager:
-            projects = get_projects(db)
+            projects = get_all_projects(db)
             return projects
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: You are not a Product Manager")
