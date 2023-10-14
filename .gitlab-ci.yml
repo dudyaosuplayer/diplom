@@ -1,0 +1,29 @@
+stages:
+  - kaniko-build
+  - deploy to kubernetes
+
+docker-build:
+  stage: kaniko-build
+  variables:
+    GIT_USERNAME: ${CI_REGISTRY_USER}
+    GIT_PASSWORD: ${CI_REGISTRY_PASSWORD}
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [""]
+  tags:
+    - mytag
+  script:
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/backend/Dockerfile"
+      --destination
+      "git.codenrock.com:5050/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA"
+
+deploy:
+  stage: not yet deploy to kubernetes
+  image:
+    name: alpine/helm:3.2.1
+  tags:
+    - mytag
+  script:
+    - kubectl apply -f deployment.yaml --namespace cnrprod-team-58619
