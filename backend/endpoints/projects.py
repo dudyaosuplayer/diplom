@@ -4,7 +4,7 @@ from fastapi import APIRouter, Path, HTTPException, status
 
 from backend.auth.auth import auth_dependencies
 from backend.db.database import db_dependencies
-from backend.models.models import Project, User
+from backend.models.models import Project
 from backend.utils.fastapi.schemas.project_schemas import ProjectCreate, ProjectResponse, ProjectUpdate
 from backend.utils.fastapi.tags import Tags
 from backend.utils.users import ProjectRole
@@ -30,7 +30,8 @@ def get_projects(db: db_dependencies, user: auth_dependencies):
 
 
 @router.post("/create_project", response_model=ProjectCreate, description='This method creates project')
-def create_project(project_name: str, project_status: ProjectStatus, db: db_dependencies, user: auth_dependencies):
+def create_project(project_name: Annotated[str, Path(..., title="Project Name", description="Name of the project to retrieve", max_length=50)], 
+                   project_status: ProjectStatus, db: db_dependencies, user: auth_dependencies):
     try:
         if not project_name or project_status:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Some field is empty")
