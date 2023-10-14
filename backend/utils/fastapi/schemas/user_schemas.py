@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
 
 class User(BaseModel):
     id: int
@@ -12,8 +12,9 @@ class User(BaseModel):
 
 class UserCreate(BaseModel):
     username: str
+    role: str
     email: str
-    password: str
+    password: constr(min_length=6, max_length=8)
 
     class Config:
         from_attributes = True

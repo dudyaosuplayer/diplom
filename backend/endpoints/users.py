@@ -3,10 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Path, Query, HTTPException
 from db.database import db_dependencies
 from auth_dep import auth_dependencies
-import schemas, models
+
 from db_queries import user_queries
 
 from utils.fastapi.tags import Tags
+from utils.fastapi.schemas.user_schemas import User, UserCreate, UserDelete
 
 router = APIRouter(
     prefix='/users',
@@ -59,16 +60,16 @@ def get_project_users(
     "/create_user",
     description='This method creates user',
 )
-def create_user(user: schemas.UserCreate, db: db_dependencies):
+def create_user(user: UserCreate, db: db_dependencies):
     """
     Create a new user.
 
     Parameters:
-    - **user** (schemas.UserCreate): User data to create.
+    - **user** (UserCreate): User data to create.
     - **db** (db_dependencies): Dependency to obtain a database session.
 
     Returns:
-        schemas.User: The created user object.
+        User: The created user object.
 
     Possible Errors:
         HTTP 400: Email already registered.
@@ -113,7 +114,7 @@ def assign_task(
 
 @router.get(
     "/{user_id}/task",
-    response_model=schemas.Task
+    response_model=Task
 )
 def get_task_for_user(user_id: int, db: db_dependencies):
     user = db.query(models.User).filter(models.User.id == user_id).first()
