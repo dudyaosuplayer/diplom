@@ -1,12 +1,16 @@
+import os.path
+import sys
+
 from fastapi import FastAPI
 import uvicorn
 
-from utils.fastapi.router import add_routers
-from models import models
-from db.database import engine, get_db, Session, Base
+from backend.utils.fastapi.router import add_routers
 
-from db.database import engine, get_db, Session, Base
-from models import models
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from backend.models import models
+from backend.db.database import engine, get_db, Session, Base
+from backend.db.database import engine, get_db, Session, Base
+from backend.models import models
 
 # Проверка
 

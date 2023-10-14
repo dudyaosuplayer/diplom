@@ -1,7 +1,7 @@
 from backend.models.models import User
 from sqlalchemy.orm import Session
 
-from utils.fastapi.schemas.user_schemas import UserCreate, UserDelete
+from backend.utils.fastapi.schemas.user_schemas import UserCreate, UserDelete
 
 
 def get_users(db: Session, skip: int = 0, limit: int = 100):

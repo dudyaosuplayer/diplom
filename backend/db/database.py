@@ -4,7 +4,7 @@ from fastapi import Depends
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-import db.config as config
+from backend.db import config
 
 
 metadata = MetaData()

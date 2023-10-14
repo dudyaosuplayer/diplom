@@ -2,12 +2,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, Path
 
-from db.queries.db_queries import create_user, delete_user, get_users, get_user_by_email, \
+from backend.db.queries.db_queries import create_user, delete_user, get_users, get_user_by_email, \
     get_user_by_username, get_user_by_id
-from db.database import db_dependencies
-from auth.auth import auth_dependencies
-from utils.fastapi.tags import Tags
-from utils.fastapi.schemas.user_schemas import User, UserCreate, UserDelete
+from backend.db.database import db_dependencies
+from backend.auth.auth import auth_dependencies
+from backend.utils.fastapi.tags import Tags
+from backend.utils.fastapi.schemas.user_schemas import User, UserCreate, UserDelete
 
 
 router = APIRouter(prefix='/authentication', tags=[Tags.comments])

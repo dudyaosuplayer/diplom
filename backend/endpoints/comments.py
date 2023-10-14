@@ -3,10 +3,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Path, HTTPException
 
-from db.database import db_dependencies
-from models.models import Comment, Task, User
-from utils.fastapi.schemas.comment_schemas import CommentResponse, CommentCreate
-from utils.fastapi.tags import Tags
+from backend.db.database import db_dependencies
+from backend.models.models import Comment, Task, User
+from backend.utils.fastapi.schemas.comment_schemas import CommentResponse, CommentCreate
+from backend.utils.fastapi.tags import Tags
 
 
 router = APIRouter(prefix='/comment', tags=[Tags.authentication])
