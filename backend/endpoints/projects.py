@@ -1,12 +1,14 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Path, HTTPException
+from fastapi import APIRouter, Path, HTTPException, status
 
 from backend.auth.auth import auth_dependencies
 from backend.db.database import db_dependencies
 from backend.models.models import Project, User
 from backend.utils.fastapi.schemas.project_schemas import ProjectCreate, ProjectResponse, ProjectUpdate
 from backend.utils.fastapi.tags import Tags
+from backend.utils.users import ProjectRole
+from backend.db.queries.db_queries import get_projects, get_project_by_name
 
 router = APIRouter(prefix='/projects', tags=[Tags.projects])
 
@@ -15,29 +17,32 @@ router = APIRouter(prefix='/projects', tags=[Tags.projects])
 
 @router.get("/get_projects", description='This method returns all projects')
 def get_projects(db: db_dependencies, user: auth_dependencies):
-    if user.role == 'Product Manager':
+    if user.role == ProjectRole.ProductManager:
         try:
-            projects = db.query(Project).all()
+            projects = get_projects(db)
             return projects
         except Exception as e:
             raise e
     else:
-        raise HTTPException(status_code=403, detail="Access denied: You are not a Product Manager")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: You are not a Product Manager")
 
 
 @router.post("/create_project", response_model=ProjectCreate, description='This method creates project')
-def create_project(project_data: ProjectCreate, db: db_dependencies, user: auth_dependencies):
-    if user.role == 'Product Manager':
-        try:
-            new_project = Project(name=project_data.name, status=project_data.status)
+def create_project(project_name: str, project_status: str, db: db_dependencies, user: auth_dependencies):
+    try:
+        if user.role == ProjectRole.ProductManager:
+            project = get_project_by_name(project_name, db)
+            if project:
+                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Project with this name already exists")
+            new_project = Project(name=project_name, status=project_status)
             db.add(new_project)
             db.commit()
             return new_project
-        except Exception as e:
-            raise e
-    else:
-        raise HTTPException(status_code=403, detail="Access denied: You are not a Product Manager")
-
+        else:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: You are not a Product Manager")
+    except Exception as e:
+        raise e
+    
 
 @router.get("/get_project/{project_id}", response_model=ProjectResponse,
             description='This method returns a project by ID')
