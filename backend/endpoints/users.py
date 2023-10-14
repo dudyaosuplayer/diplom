@@ -4,8 +4,8 @@ from fastapi import APIRouter, Path, Query, HTTPException
 
 from backend.auth_dep import auth_dependencies
 from backend.db.database import db_dependencies
-from backend.db.queries.user_queries import get_users, get_user_by_username, get_user_by_id, \
-    get_task, assign_task_to_user
+from backend.db.queries.users import get_users, get_user_by_username, get_user_by_id
+from backend.db.queries.tasks import get_task, assign_task_to_user
 from backend.models.models import Project, Task
 from backend.utils.fastapi.tags import Tags
 from backend.utils.fastapi.schemas.user_schemas import User, UserCreate, UserDelete
