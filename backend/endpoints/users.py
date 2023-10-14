@@ -67,6 +67,9 @@ def add_user_to_project(db: db_dependencies,
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
         if not user:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not found")
+        existing_users_in_project = [user.id for user in project.users]
+        if user_id in existing_users_in_project:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User already attached to this project")
         project.users.append(user)
         db.commit()
         return {"message": "User added to project successfully"}
