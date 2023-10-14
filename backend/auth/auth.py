@@ -20,6 +20,13 @@ def verify_credentials(credentials: Annotated[HTTPBasicCredentials, Depends(secu
             detail=f'User {credentials.username} not found',
             headers={'WWW-Authenticate': 'Basic'}
         )
+    if credentials.password != user.password:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f'Incorrect password',
+            headers={'WWW-Authenticate': 'Basic'}
+        )
+
     return user
 
 

@@ -9,7 +9,7 @@ from backend.utils.fastapi.schemas.project_schemas import ProjectCreate, Project
 from backend.utils.fastapi.tags import Tags
 from backend.utils.users import ProjectRole
 from backend.utils.statuses import ProjectStatus
-from backend.db.queries.projects import get_projects, get_project_by_name, get_project_by_id
+from backend.db.queries import projects as projs
 from backend.db.queries.users import get_user_by_id, get_users_from_project
 
 router = APIRouter(prefix='/projects', tags=[Tags.projects])
@@ -21,7 +21,7 @@ router = APIRouter(prefix='/projects', tags=[Tags.projects])
 def get_projects(db: db_dependencies, user: auth_dependencies):
     if user.role == ProjectRole.ProductManager:
         try:
-            projects = get_projects(db)
+            projects = projs.get_projects(db)
             return projects
         except Exception as e:
             raise e
@@ -36,7 +36,7 @@ def create_project(project_name: Annotated[str, Path(..., title="Project Name", 
         if not project_name or project_status:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Some field is empty")
         if user.role == ProjectRole.ProductManager:
-            project = get_project_by_name(project_name, db)
+            project = projs.get_project_by_name(project_name, db)
             if project:
                 raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Project with this name already exists")
             new_project = Project(name=project_name, status=project_status)
@@ -54,7 +54,7 @@ def create_project(project_name: Annotated[str, Path(..., title="Project Name", 
 def get_project(project_id: Annotated[int, Path(..., title="Project ID", description="The ID of the project to retrieve", ge=0)],
                 db: db_dependencies):
     try:
-        project = get_project_by_id(project_id, db)
+        project = projs.get_project_by_id(project_id, db)
         if not project:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
         project = ProjectResponse(id=project.id,
@@ -71,7 +71,7 @@ def update_project(
         project_name: str, project_status: ProjectStatus, db: db_dependencies, user: auth_dependencies):
     if user.role == ProjectRole.ProductManager:
         try:
-            project = get_project_by_id(project_id, db)
+            project = projs.get_project_by_id(project_id, db)
             if not project:
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
             if project_name:
@@ -93,7 +93,7 @@ def add_user_to_project(db: db_dependencies,
                         user_id: int = Path(..., description="The ID of the user")):
     if current_user.role != ProjectRole.ProductManager:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Permission denied. You must be a Product Manager to add users to a project.")
-    project = get_project_by_id(project_id, db)
+    project = projs.get_project_by_id(project_id, db)
     user = get_user_by_id(user_id, db)
     if not project:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
