@@ -7,10 +7,8 @@ from fastapi import FastAPI
 import uvicorn
 
 from backend.utils.fastapi.router import add_routers
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from backend.models import models
-from backend.db.database import engine, get_db, Session, Base
+# from backend.models import models
+# from backend.db.database import engine, get_db, Session, Base
 
 
 # # Проверка
