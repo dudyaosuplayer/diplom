@@ -7,6 +7,7 @@ from backend.utils.users import ProjectRole
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
+
 project_user_association = Table(
     'project_user_association',
     Base.metadata,

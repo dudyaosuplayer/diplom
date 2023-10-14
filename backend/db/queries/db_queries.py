@@ -1,4 +1,4 @@
-from models.models import User
+from backend.models.models import User
 from sqlalchemy.orm import Session
 
 from backend.utils.fastapi.schemas.user_schemas import UserCreate, UserDelete
