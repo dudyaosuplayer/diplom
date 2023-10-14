@@ -1,4 +1,5 @@
 from pydantic import BaseModel, constr
+from backend.utils.users import ProjectRole
 
 
 class User(BaseModel):
@@ -13,7 +14,7 @@ class User(BaseModel):
 
 class UserCreate(BaseModel):
     nickname: str
-    role: str
+    role: ProjectRole
     email: str
     password: constr(min_length=6, max_length=8)
 

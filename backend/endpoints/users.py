@@ -1,26 +1,26 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Path, Query, HTTPException
+from fastapi import APIRouter, Path, Query, HTTPException, status
 
 from backend.auth.auth import auth_dependencies
 from backend.db.database import db_dependencies
-from backend.db.queries import users as users_q
-
+from backend.db.queries.projects import get_project_by_id
+from backend.db.queries.users import get_all_users, get_user_by_id, get_user_by_username, create_new_user
 from backend.models.models import Project
 from backend.utils.fastapi.tags import Tags
 from backend.utils.fastapi.schemas.user_schemas import User, UserCreate, UserDelete
+from backend.utils.users import ProjectRole
+
 
 router = APIRouter(prefix='/users', tags=[Tags.users])
 
 
 @router.get("/get_users", description='This method returns all users')
 def get_users(db: db_dependencies,
-              skip: Annotated[int | None, Query(title="Number of values to skip",
-                                                description="Number of values to skip (from the beginning)")] = 0,
-              limit: Annotated[int | None, Query(title="Limit number of entries",
-                                                 description="Limit number of entries (100 is optimal)")] = 100):
+              skip: int | None = Query(0, title="Number of values to skip", description="Number of values to skip (from the beginning)"),
+              limit: int | None = Query(100, title="Limit number of entries", description="Limit number of entries (100 is optimal)")):
     try:
-        users = users_q.get_users(db, skip=skip, limit=limit)
+        users = get_all_users(db, skip, limit)
         return users
     except Exception as e:
         raise e
@@ -31,34 +31,60 @@ def get_project_users(db: db_dependencies,
                       credentials: auth_dependencies,
                       project_id: int = Path(..., description="The ID of the project")):
     try:
-        project = db.query(Project).filter(Project.id == project_id).first()
+        project = get_project_by_id(project_id, db)
         if not project:
-            return {"message": "Project not found"}
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
         users = project.users
         return users
     except Exception as e:
         raise e
-    finally:
-        db.close()
 
 
 @router.post("/create_user", description='This method creates user')
 def create_user(user: UserCreate, db: db_dependencies):
-    """
-    Create a new user.
+    try:
+        db_user_username = get_user_by_username(db, username=user.nickname)
+        if db_user_username:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Username already registered")
+        create_new_user(db=db, user=user)
+        return {"message": "User was created successfully"}
+    except Exception as e:
+        raise e
 
-    Parameters:
-    - **user** (UserCreate): User data to create.
-    - **db** (db_dependencies): Dependency to obtain a database session.
 
-    Returns:
-        User: The created user object.
+@router.post("/add_user_to_project", description='Add user to project')
+def add_user_to_project(db: db_dependencies,
+                        current_user: auth_dependencies,
+                        project_id: int = Query(..., description="The ID of the project"),
+                        user_id: int = Query(..., description="The ID of the user")):
+    try:
+        if current_user.role != ProjectRole.ProductManager:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="Permission denied. You must be a Product Manager to add users to a project.")
+        project = get_project_by_id(project_id, db)
+        user = get_user_by_id(db, user_id)
+        if not project:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
+        if not user:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not found")
+        existing_users_in_project = [user.id for user in project.users]
+        if user_id in existing_users_in_project:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User already attached to this project")
+        project.users.append(user)
+        db.commit()
+        return {"message": "User added to project successfully"}
+    except Exception as e:
+        raise e
 
-    Possible Errors:
-        HTTP 400: Email already registered.
-        HTTP 400: Username already registered.
-    """
-    db_user_username = users_q.get_user_by_username(db, username=user.nickname)
-    if db_user_username:
-        raise HTTPException(status_code=400, detail="Username already registered")
-    return create_user(db=db, user=user)
+
+@router.get("/get_users/{project_id}", description='Get users attached to a project')
+def get_users_attached_to_project(db: db_dependencies,
+                                  project_id: int = Path(..., description="The ID of the project")):
+    try:
+        project = get_project_by_id(project_id, db)
+        if not project:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
+        users = project.users
+        return users
+    except Exception as e:
+        raise e
