@@ -16,12 +16,8 @@ class TaskResponse(BaseModel):
 
 
 class TaskCreate(BaseModel):
-    parent_id: int
     body: str
     task_name: str
-    timestamp: datetime
     user_id: int
-    project_id: int
-    status: str
     depth: int
 

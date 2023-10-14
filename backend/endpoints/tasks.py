@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Optional
 
-from fastapi import APIRouter, Path, HTTPException, status
+from fastapi import APIRouter, Path, HTTPException, status, Query
 
 from backend.auth.auth import auth_dependencies
 from backend.db.database import db_dependencies
@@ -62,27 +62,35 @@ def get_task(project_id: Annotated[int, Path(..., title="Project ID", descriptio
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router.post("/get_task/{project_id}/{task_id}", description='This method creates task in project')
-def create_task(project_id: Annotated[int, Path(..., title="Project ID", description="The ID of the project")],
-                task_id: Annotated[int, Path(..., title="Task ID", description="The ID of the parent task")],
-                task_request: TaskCreate,
-                db: db_dependencies):
+@router.post("/get_task/{project_id}/{task_id}/{task_name}", description='This method creates task in project')
+def create_task(user_id: int,
+                task_status: TaskStatus,
+                db: db_dependencies,
+                body: Optional[str] = Query(None),
+                depth: Optional[int] = Query(None),
+                task_name: str = Path(..., title="Task Name", description="Name of the task to retrieve", max_length=150),
+                project_id: int = Path(..., title="Project ID", description="The ID of the project"),
+                task_id: int = Path(..., title="Task ID", description="The ID of the task"),
+                parent_id: Optional[int] = Query(None, title="Parent ID", description="The ID of the parent task")):
     try:
-        # Проверка существования проекта и задачи
         project_exists = get_project_by_id(project_id, db)
         parent_task_exists = get_task_by_task_id(task_id, db)
         if not project_exists or not parent_task_exists:
             raise HTTPException(status_code=404, detail="Project or parent task not found")
-        # Создание новой задачи и добавление ее в базу данных
-        new_task = Task(project_id=project_id,
-                        parent_id=task_id,
-                        body=task_request.body,
-                        task_name=task_request.task_name)
-                        # Другие поля задачи, которые необходимо заполнить
+        new_task = Task(id=task_id,
+                        body=body,
+                        task_name=task_name,
+                        timestamp=datetime.now(),
+                        user_id=user_id,
+                        project_id=project_id,
+                        status=None,
+                        depth=depth)
+        if task_status:
+            new_task.status = task_status
+        if parent_id:
+            new_task.parent_id = parent_id
         db.add(new_task)
         db.commit()
-        db.refresh(new_task)
-        # Создание объекта TaskResponse из новой задачи и возвращение его в качестве ответа
         response_task = TaskResponse(id=new_task.id,
                                      parent_id=new_task.parent_id,
                                      body=new_task.body,
@@ -119,9 +127,20 @@ def assign_task(task_id: int,
 @router.get("/{user_id}/task", response_model=TaskResponse)
 def get_task_for_user(user_id: int, db: db_dependencies):
     user = get_user_by_id(db, user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+    if not user:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not found")
     task = get_task_for_user(user_id, db)
-    if task is None:
-        raise HTTPException(status_code=404, detail="Task not found for this user")
+    if not task:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Task not found for this user")
     return task
+
+
+@router.get("/change_task_status", response_model=TaskResponse)
+def get_task_for_user(task_id: Annotated[int, Path(..., title="Task ID", description="The ID of the task")], 
+                      task_status: TaskStatus, db: db_dependencies):
+    task = get_task_by_task_id(task_id, db)
+    if not task:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Task not found for this user")
+    task.status = task_status
+    db.commit()
+    return {"message": "Task was updated succesfully"}
