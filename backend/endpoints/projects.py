@@ -1,8 +1,8 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Path, HTTPException, status
+from fastapi import APIRouter, Path, HTTPException, status, Depends
 
-from backend.auth.auth import auth_dependencies
+from backend.auth.auth import auth_dependencies, verify_credentials
 from backend.db.database import db_dependencies
 from backend.models.models import Project
 from backend.utils.fastapi.schemas.project_schemas import ProjectCreate, ProjectResponse, ProjectUpdate
@@ -24,10 +24,10 @@ def get_projects(db: db_dependencies, user: auth_dependencies):
             projects = get_projects(db)
             return projects
         else:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: You are not a Product Manager")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="Access denied: You are not a Product Manager")
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-    
 
 
 @router.post("/create_project", response_model=ProjectCreate, description='This method creates project')
@@ -59,6 +59,8 @@ def get_project(project_id: Annotated[
     int, Path(..., title="Project ID", description="The ID of the project to retrieve", ge=0)],
                 db: db_dependencies, user: auth_dependencies):
     try:
+        if user.role != ProjectRole.ProductManager:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: Insufficient privileges")
         project = projs.get_project_by_id(project_id, db)
         if not project:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
