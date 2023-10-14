@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, Path
 
-from backend.db.queries.db_queries import create_user, delete_user, get_users, get_user_by_email, \
+from backend.db.queries.users import create_user, delete_user, get_users, get_user_by_email, \
     get_user_by_username, get_user_by_id
 from backend.db.database import db_dependencies
 from backend.auth.auth import auth_dependencies

@@ -64,35 +64,3 @@ def create_user(user: UserCreate, db: db_dependencies):
     if db_user_username:
         raise HTTPException(status_code=400, detail="Username already registered")
     return create_user(db=db, user=user)
-
-
-@router.post("/assign_task", description='This method allows a Product Manager to assign tasks to Developers and Testers.')
-def assign_task(task_id: int,
-                assigned_user_id: int,  # Список идентификаторов пользователей, которым назначается задача
-                db: db_dependencies,
-                current_user: auth_dependencies):
-    if current_user.role != ProjectRole.ProductManager:
-        raise HTTPException(status_code=403, detail="You don't have permission to assign tasks.")
-    task = get_task(db, task_id)
-    if task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-    user = get_user_by_id(db, assigned_user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail=f"User with ID {assigned_user_id} not found")
-    if user.role not in [ProjectRole.Developer, ProjectRole.Tester]:
-        raise HTTPException(status_code=400, detail=f"User with ID {assigned_user_id} cannot be assigned to a task.")
-    # Назначение задачи пользователю
-    assign_task_to_user(db, task_id, assigned_user_id)
-    # Вернуть обновленную задачу
-    return {"detail": f"Task with ID {task_id} assigned to user width ID {assigned_user_id} successful!"}
-
-
-@router.get("/{user_id}/task", response_model=TaskResponse)
-def get_task_for_user(user_id: int, db: db_dependencies):
-    user = db.query(User).filter(User.id == user_id).first()
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    task = db.query(Task).filter(Task.user_id == user_id).first()
-    if task is None:
-        raise HTTPException(status_code=404, detail="Task not found for this user")
-    return task

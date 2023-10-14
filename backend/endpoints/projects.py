@@ -19,14 +19,15 @@ router = APIRouter(prefix='/projects', tags=[Tags.projects])
 
 @router.get("/get_projects", description='This method returns all projects')
 def get_projects(db: db_dependencies, user: auth_dependencies):
-    if user.role == ProjectRole.ProductManager:
-        try:
+    try:
+        if user.role == ProjectRole.ProductManager:
             projects = get_projects(db)
             return projects
-        except Exception as e:
-            raise e
-    else:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: You are not a Product Manager")
+        else:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: You are not a Product Manager")
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    
 
 
 @router.post("/create_project", response_model=ProjectCreate, description='This method creates project')
@@ -46,7 +47,7 @@ def create_project(project_name: Annotated[str, Path(..., title="Project Name", 
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: You are not a Product Manager")
     except Exception as e:
-        raise e
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @router.get("/get_project/{project_id}", response_model=ProjectResponse,
@@ -62,7 +63,7 @@ def get_project(project_id: Annotated[int, Path(..., title="Project ID", descrip
                                   status=project.status)
         return project
     except Exception as e:
-        raise e
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @router.put("/update_project/{project_id}", description='This method updates the name and status of a project by ID')
@@ -81,7 +82,7 @@ def update_project(
             db.commit()
             return {"message": "Project updated successfully"}
         except Exception as e:
-            raise e
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: You are not a Product Manager")
 
