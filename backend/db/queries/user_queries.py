@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from backend.models.models import User, Task
 from backend.utils.fastapi.schemas.user_schemas import UserCreate, UserDelete
-from backend.utils.fastapi.schemas.task_schemas import TaskSchema
+from backend.utils.fastapi.schemas.task_schemas import TaskResponse
 
 
 def get_user_by_username(db: Session, username: str):
