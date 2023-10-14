@@ -28,6 +28,7 @@ def get_users(db: db_dependencies,
 
 @router.get("/get_users/{project_id}", description='This method returns all users from project')
 def get_project_users(db: db_dependencies,
+                      credentials: auth_dependencies,
                       project_id: int = Path(..., description="The ID of the project")):
     try:
         project = get_project_by_id(project_id, db)
