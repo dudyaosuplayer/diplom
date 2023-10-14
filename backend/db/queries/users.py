@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from backend.models.models import User, Task
+from backend.models.models import User, Project
 from backend.utils.fastapi.schemas.user_schemas import UserCreate, UserDelete
 
 
@@ -18,6 +18,9 @@ def get_user_by_id(db: Session, user_id: int):
 
 def get_user_by_email(db: Session, user_email: str):
     return db.query(User).filter(User.email == user_email).first()
+
+def get_users_from_project(id: int, db: Session):
+    return db.query(Project).filter(Project.id == id).first()
 
 
 def create_user(db: Session, user: UserCreate):
