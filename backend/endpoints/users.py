@@ -29,7 +29,7 @@ def get_users(db: db_dependencies,
         raise e
 
 
-@router.get("/users/get_users/{project_id}", description='This method returns all users from project')
+@router.get("/get_users/{project_id}", description='This method returns all users from project')
 def get_project_users(db: db_dependencies,
                       project_id: int = Path(..., description="The ID of the project")):
     try:

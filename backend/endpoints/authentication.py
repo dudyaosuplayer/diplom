@@ -10,7 +10,7 @@ from backend.utils.fastapi.tags import Tags
 from backend.utils.fastapi.schemas.user_schemas import User, UserCreate, UserDelete
 
 
-router = APIRouter(prefix='/authentication', tags=[Tags.comments])
+router = APIRouter(prefix='/authentication', tags=[Tags.authentication])
 
 
 @router.get('/', response_model=list[User])

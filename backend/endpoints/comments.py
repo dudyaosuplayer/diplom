@@ -9,10 +9,10 @@ from backend.utils.fastapi.schemas.comment_schemas import CommentResponse, Comme
 from backend.utils.fastapi.tags import Tags
 
 
-router = APIRouter(prefix='/comment', tags=[Tags.authentication])
+router = APIRouter(prefix='/comment', tags=[Tags.comments])
 
 
-@router.get("/comments/get_comments_task/{task_id}",
+@router.get("/get_comments_task/{task_id}",
             description='This method returns all comments from task',
             tags=[Tags.comments])
 def get_comments_tasks(task_id: Annotated[int, Path(..., title="Task ID", description="The ID of the task to retrieve", ge=0)],
@@ -31,7 +31,7 @@ def get_comments_tasks(task_id: Annotated[int, Path(..., title="Task ID", descri
         raise e
 
 
-@router.get("/comments/get_comments_user/{user_id}",
+@router.get("/get_comments_user/{user_id}",
             description='This method returns all comments from user',
             tags=[Tags.comments])
 def get_comments_user(
@@ -53,7 +53,7 @@ def get_comments_user(
         raise e
 
 
-@router.post("/comments/create_comment",
+@router.post("/create_comment",
              description='This method creates a new comment for a user and task',
              tags=[Tags.comments])
 def create_comment(comment_request: CommentCreate, db: db_dependencies) -> CommentCreate:
