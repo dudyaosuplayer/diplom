@@ -16,6 +16,5 @@ docker-build:
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/backend/Dockerfile"
-      --destination
-      "git.codenrock.com:5050/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA"
+      --destination "git.codenrock.com:5050/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA"
 
