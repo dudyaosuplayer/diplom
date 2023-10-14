@@ -1,14 +1,12 @@
-from time import sleep
-sleep(30.0)
-
-import os
-print(os.getcwd())
-
+import os.path
+import sys
 
 from fastapi import FastAPI
 import uvicorn
 
 from utils.fastapi.router import add_routers
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 app = FastAPI(
     title='Project Managing API',
