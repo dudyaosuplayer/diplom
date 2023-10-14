@@ -1,15 +1,18 @@
-from fastapi import Depends, HTTPException, status
-from sqlalchemy.orm import Session
 from typing import Annotated
+
+from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from sqlalchemy.orm import Session
+
+from db.queries.db_queries import get_user_by_username
 from db.database import get_db
-from auth import db_queries
+
 
 security = HTTPBasic()
 
 
 def verify_credentials(credentials: Annotated[HTTPBasicCredentials, Depends(security)], db: Session = Depends(get_db)):
-    user = db_queries.get_user_by_username(db, username=str(credentials.username))
+    user = get_user_by_username(db, username=str(credentials.username))
 
     if not user:
         raise HTTPException(

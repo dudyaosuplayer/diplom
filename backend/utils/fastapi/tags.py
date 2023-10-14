@@ -6,3 +6,4 @@ class Tags(str, Enum):
     tasks = 'Tasks'
     users = 'Users'
     comments = 'Comments'
+    authentication = 'Authentication'

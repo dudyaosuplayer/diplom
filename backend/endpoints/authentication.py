@@ -1,23 +1,24 @@
-from fastapi import APIRouter, HTTPException, Query, Path
 from typing import Annotated
-from auth import db_queries
+
+from fastapi import APIRouter, HTTPException, Query, Path
+
+from db.queries.db_queries import create_user, delete_user, get_users, get_user_by_email, \
+    get_user_by_username, get_user_by_id
 from db.database import db_dependencies
 from auth.auth import auth_dependencies
+from utils.fastapi.tags import Tags
 from utils.fastapi.schemas.user_schemas import User, UserCreate, UserDelete
 
-router = APIRouter(
-    prefix='/users',
-    tags=['User']
-)
+
+router = APIRouter(prefix='/authentication', tags=[Tags.comments])
 
 
 @router.get('/', response_model=list[User])
-async def get_all_users(
-        db: db_dependencies, skip: Annotated[int | None, Query(title="Number of values to skip",
-                                                               description="Number of values to skip (from the beginning)")] = 0,
-        limit: Annotated[int | None, Query(title="Limit number of entries",
-                                           description="Limit number of entries (100 is optimal)")] = 100
-):
+async def get_all_users(db: db_dependencies,
+                        skip: Annotated[int | None, Query(title="Number of values to skip",
+                                                          description="Number of values to skip (from the beginning)")] = 0,
+                        limit: Annotated[int | None, Query(title="Limit number of entries",
+                                                           description="Limit number of entries (100 is optimal)")] = 100):
     """
     Get a list of all users.
 
@@ -28,7 +29,7 @@ async def get_all_users(
 
     Returns a list of users.
     """
-    users = db_queries.get_users(db, skip=skip, limit=limit)
+    users = get_users(db, skip=skip, limit=limit)
     return users
 
 
@@ -48,13 +49,13 @@ async def create_user(user: UserCreate, db: db_dependencies):
         HTTP 400: Email already registered.
         HTTP 400: Username already registered.
     """
-    db_user_email = db_queries.get_user_by_email(db, user_email=user.email)
-    db_user_username = db_queries.get_user_by_username(db, username=user.username)
+    db_user_email = get_user_by_email(db, user_email=user.email)
+    db_user_username = get_user_by_username(db, username=user.nickname)
     if db_user_email:
         raise HTTPException(status_code=400, detail="Email already registered")
     if db_user_username:
         raise HTTPException(status_code=400, detail="Username already registered")
-    return db_queries.create_user(db=db, user=user)
+    return create_user(db=db, user=user)
 
 
 @router.delete('/', response_model=User)
@@ -73,18 +74,16 @@ async def delete_user(credentials: auth_dependencies, user: UserDelete, db: db_d
     Possible Errors:
         HTTP 400: User does not exist.
     """
-    db_user = db_queries.get_user_by_username(db, username=user.username)
+    db_user = get_user_by_username(db, username=user.username)
     if not db_user:
         raise HTTPException(status_code=400, detail="User does not exist")
-    return db_queries.delete_user(db=db, user=user)
+    return delete_user(db=db, user=user)
 
 
 @router.put('/{user_id}', response_model=User)
-async def update_user(
-        credentials: auth_dependencies, user_id: Annotated[
-            int, Path(..., title="User ID", description="The ID of user to retrieve", ge=0)],
-        user: UserCreate, db: db_dependencies
-):
+async def update_user(credentials: auth_dependencies, 
+                      user_id: Annotated[int, Path(..., title="User ID", description="The ID of user to retrieve", ge=0)],
+                      user: UserCreate, db: db_dependencies):
     """
     Update a user's information.
 
@@ -100,7 +99,7 @@ async def update_user(
     Possible Errors:
         HTTP 400: User does not exist.
     """
-    db_user = db_queries.get_user_by_id(db, user_id=user_id)
+    db_user = get_user_by_id(db, user_id=user_id)
     if not db_user:
         raise HTTPException(status_code=400, detail="User does not exist")
-    return db_queries.update_user(db=db, user=user, user_id=user_id)
+    return update_user(db=db, user=user, user_id=user_id)

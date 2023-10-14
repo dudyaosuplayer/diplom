@@ -1,17 +1,16 @@
 from fastapi import APIRouter, Depends, Path, Query
 
-from utils.fastapi.tags import Tags
-
 from auth.auth import auth_dependencies
 from db.database import db_dependencies
 
+from utils.fastapi.tags import Tags
 
-router = APIRouter()
+
+router = APIRouter(prefix='/tasks', tags=[Tags.tasks])
 
 
-@router.get("/tasks/get_tasks/{project_id}",
-         description='This method returns all tasks from project',
-         tags=[Tags.tasks])
+@router.get("/tasks/get_tasks/{project_id}", description='This method returns all tasks from project',
+            tags=[Tags.tasks])
 def get_tasks(project_id: str = Path()):
     try:
         # TODO get tasks from project
@@ -21,9 +20,8 @@ def get_tasks(project_id: str = Path()):
         raise e
 
 
-@router.get("/tasks/get_task/{project_id}/{task_id}",
-         description='This method returns task from project',
-         tags=[Tags.tasks])
+@router.get("/tasks/get_task/{project_id}/{task_id}", description='This method returns task from project',
+            tags=[Tags.tasks])
 def get_task(project_id: str = Path(),
              task_id: str = Path()):
     try:
@@ -34,9 +32,8 @@ def get_task(project_id: str = Path(),
         raise e
 
 
-@router.post("/tasks/get_task/{project_id}/{task_id}",
-         description='This method creates task in project',
-         tags=[Tags.tasks])
+@router.post("/tasks/get_task/{project_id}/{task_id}", description='This method creates task in project',
+             tags=[Tags.tasks])
 def create_tasks(project_id: str = Path(),
                  task_id: str = Path()):
     try:

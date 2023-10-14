@@ -1,5 +1,6 @@
-from sqlalchemy.orm import Session
 from models.models import User
+from sqlalchemy.orm import Session
+
 from utils.fastapi.schemas.user_schemas import UserCreate, UserDelete
 
 
@@ -12,7 +13,7 @@ def get_user_by_id(db: Session, user_id: int):
 
 
 def get_user_by_username(db: Session, username: str):
-    return db.query(User).filter(User.username == username).first()
+    return db.query(User).filter(User.nickname == username).first()
 
 
 def get_user_by_email(db: Session, user_email: str):
@@ -21,7 +22,7 @@ def get_user_by_email(db: Session, user_email: str):
 
 def create_user(db: Session, user: UserCreate):
     fake_hashed_password = user.password
-    db_user = User(username=user.username, email=user.email, password=fake_hashed_password)
+    db_user = User(username=user.nickname, email=user.email, password=fake_hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -29,7 +30,7 @@ def create_user(db: Session, user: UserCreate):
 
 
 def delete_user(db: Session, user: UserDelete):
-    db_user = get_user_by_username(db, username=user.username)
+    db_user = get_user_by_username(db, username=user.nickname)
     db.delete(db_user)
     db.commit()
     return db_user
@@ -37,7 +38,7 @@ def delete_user(db: Session, user: UserDelete):
 
 def update_user(db: Session, user: UserCreate, user_id: int):
     db_user = get_user_by_id(db, user_id=user_id)
-    db_user.username = user.username
+    db_user.nickname = user.nickname
     db_user.email = user.email
     db_user.password = user.password
     db.add(db_user)

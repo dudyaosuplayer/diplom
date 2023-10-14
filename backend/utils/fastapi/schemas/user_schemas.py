@@ -11,7 +11,7 @@ class User(BaseModel):
 
 
 class UserCreate(BaseModel):
-    username: str
+    nickname: str
     role: str
     email: str
     password: constr(min_length=6, max_length=8)
@@ -21,5 +21,5 @@ class UserCreate(BaseModel):
 
 
 class UserDelete(BaseModel):
-    username: str
+    nickname: str
     password: str

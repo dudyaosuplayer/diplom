@@ -1,9 +1,11 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import declarative_base
-from fastapi import Depends
 from typing import Annotated
+
+from fastapi import Depends
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
+
 import db.config as config
+
 
 engine = create_engine(
     url=f"postgresql+psycopg2://{config.DB_USER}:{config.DB_PASS}@{config.DB_HOST}:{config.DB_PORT}/{config.DB_NAME}",
