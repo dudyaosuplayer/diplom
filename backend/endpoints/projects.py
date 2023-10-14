@@ -68,9 +68,9 @@ def get_project(db: db_dependencies, user: auth_dependencies,
 
 
 @router.put("/update_project/{project_id}", description='This method updates the name and status of a project by ID')
-def update_project(
+def update_project(project_status: ProjectStatus, db: db_dependencies, user: auth_dependencies,
         project_id: Annotated[int, Path(..., title="Project ID", description="The ID of project to retrieve", ge=0)],
-        project_name: str, project_status: ProjectStatus, db: db_dependencies, user: auth_dependencies):
+        project_name: str = Path(..., title="Project Name", description="Name of the project to retrieve", max_length=50)):
     if user.role == ProjectRole.ProductManager:
         try:
             project = get_project_by_id(project_id, db)
