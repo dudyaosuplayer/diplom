@@ -65,8 +65,7 @@ class Task(Base):
     user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
     project_id = Column(Integer, ForeignKey('project.id', ondelete='CASCADE'))
     status = Column(String(10))
-    depth = Column(Integer, default=0)
-
+    
     comment = relationship('Comment', lazy=True, cascade='all, delete')
 
     def __repr__(self):
