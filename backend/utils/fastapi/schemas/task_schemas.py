@@ -24,3 +24,4 @@ class TaskCreate(BaseModel):
     project_id: int
     status: str
     depth: int
+
