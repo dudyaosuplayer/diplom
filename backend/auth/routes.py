@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, Query, Path
 from typing import Annotated
-from auth import db_queries, schemas
+from auth import db_queries
 from db.database import db_dependencies
 from auth.auth import auth_dependencies
+from utils.fastapi.schemas.user_schemas import User, UserCreate, UserDelete
 
 router = APIRouter(
     prefix='/users',
@@ -10,7 +11,7 @@ router = APIRouter(
 )
 
 
-@router.get('/', response_model=list[schemas.User])
+@router.get('/', response_model=list[User])
 async def get_all_users(
         db: db_dependencies, skip: Annotated[int | None, Query(title="Number of values to skip",
                                                                description="Number of values to skip (from the beginning)")] = 0,
@@ -31,8 +32,8 @@ async def get_all_users(
     return users
 
 
-@router.post('/', response_model=schemas.User)
-async def create_user(user: schemas.UserCreate, db: db_dependencies):
+@router.post('/', response_model=User)
+async def create_user(user: UserCreate, db: db_dependencies):
     """
     Create a new user.
 
@@ -56,8 +57,8 @@ async def create_user(user: schemas.UserCreate, db: db_dependencies):
     return db_queries.create_user(db=db, user=user)
 
 
-@router.delete('/', response_model=schemas.User)
-async def delete_user(credentials: auth_dependencies, user: schemas.UserDelete, db: db_dependencies):
+@router.delete('/', response_model=User)
+async def delete_user(credentials: auth_dependencies, user: UserDelete, db: db_dependencies):
     """
     Delete a user.
 
@@ -78,11 +79,11 @@ async def delete_user(credentials: auth_dependencies, user: schemas.UserDelete, 
     return db_queries.delete_user(db=db, user=user)
 
 
-@router.put('/{user_id}', response_model=schemas.User)
+@router.put('/{user_id}', response_model=User)
 async def update_user(
         credentials: auth_dependencies, user_id: Annotated[
             int, Path(..., title="User ID", description="The ID of user to retrieve", ge=0)],
-        user: schemas.UserCreate, db: db_dependencies
+        user: UserCreate, db: db_dependencies
 ):
     """
     Update a user's information.

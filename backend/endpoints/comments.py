@@ -5,7 +5,7 @@ from typing import Annotated
 
 from db.database import db_dependencies
 from auth.auth import auth_dependencies
-from models import Comment, Task, User
+from models.models import Comment, Task, User
 from utils.fastapi.schemas.comment_schemas import CommentResponse, CommentCreate
 
 from utils.fastapi.tags import Tags

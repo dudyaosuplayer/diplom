@@ -3,7 +3,7 @@ from typing import Annotated
 
 from db.database import db_dependencies
 from auth.auth import auth_dependencies
-from models import Project, User
+from models.models import Project, User
 from utils.fastapi.schemas.project_schemas import ProjectCreate, ProjectResponse, ProjectUpdate
 
 from utils.fastapi.tags import Tags

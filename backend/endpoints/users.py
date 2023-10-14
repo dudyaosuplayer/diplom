@@ -6,8 +6,11 @@ from auth_dep import auth_dependencies
 
 from db_queries import user_queries
 
+from models.models import Project, Task
+
 from utils.fastapi.tags import Tags
 from utils.fastapi.schemas.user_schemas import User, UserCreate, UserDelete
+from utils.fastapi.schemas.task_schemas import TaskSchema
 
 router = APIRouter(
     prefix='/users',
@@ -42,7 +45,7 @@ def get_project_users(
         project_id: int = Path(..., description="The ID of the project")
 ):
     try:
-        project = db.query(models.Project).filter(models.Project.id == project_id).first()
+        project = db.query(Project).filter(Project.id == project_id).first()
 
         if not project:
             return {"message": "Project not found"}
@@ -114,14 +117,14 @@ def assign_task(
 
 @router.get(
     "/{user_id}/task",
-    response_model=Task
+    response_model=TaskSchema
 )
 def get_task_for_user(user_id: int, db: db_dependencies):
-    user = db.query(models.User).filter(models.User.id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
 
-    task = db.query(models.Task).filter(models.Task.user_id == user_id).first()
+    task = db.query(Task).filter(Task.user_id == user_id).first()
     if task is None:
         raise HTTPException(status_code=404, detail="Task not found for this user")
 
