@@ -1,4 +1,4 @@
-from pydantic import BaseModel, constr
+from pydantic import BaseModel, EmailStr, constr
 from backend.utils.users import ProjectRole
 
 
@@ -15,7 +15,7 @@ class User(BaseModel):
 class UserCreate(BaseModel):
     nickname: str
     role: ProjectRole
-    email: str
+    email: EmailStr
     password: constr(min_length=6, max_length=8)
 
     class Config:
