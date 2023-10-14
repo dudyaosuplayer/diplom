@@ -19,11 +19,3 @@ docker-build:
       --destination
       "git.codenrock.com:5050/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA"
 
-deploy:
-  stage: not yet deploy to kubernetes
-  image:
-    name: alpine/helm:3.2.1
-  tags:
-    - mytag
-  script:
-    - kubectl apply -f deployment.yaml --namespace cnrprod-team-58619
