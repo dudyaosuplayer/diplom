@@ -1,6 +1,7 @@
 from backend.models.models import User
 from sqlalchemy.orm import Session
 
+from backend.models.models import Project
 from backend.utils.fastapi.schemas.user_schemas import UserCreate, UserDelete
 
 
@@ -45,3 +46,10 @@ def update_user(db: Session, user: UserCreate, user_id: int):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+def get_projects(db: Session) -> Project:
+    return db.query(Project).all()
+
+
+def get_project_by_name(name: str, db: Session) -> Project:
+    return db.query(Project).where(Project.name == name).first()
