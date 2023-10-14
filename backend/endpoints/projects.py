@@ -5,13 +5,12 @@ from fastapi import APIRouter, Path, HTTPException, status
 from backend.auth.auth import auth_dependencies
 from backend.db.database import db_dependencies
 from backend.models.models import Project
-from backend.utils.fastapi.schemas.project_schemas import ProjectCreate, ProjectResponse, ProjectUpdate
+from backend.utils.fastapi.schemas.project_schemas import ProjectResponse
 from backend.utils.fastapi.tags import Tags
 from backend.utils.users import ProjectRole
 from backend.utils.statuses import ProjectStatus
-from backend.db.queries import projects as projs
-from backend.db.queries.projects import get_all_projects
-from backend.db.queries.users import get_user_by_id, get_users_from_project
+from backend.db.queries.projects import get_all_projects, get_project_by_name, get_project_by_id
+
 
 router = APIRouter(prefix='/projects', tags=[Tags.projects])
 
@@ -28,39 +27,36 @@ def get_projects(db: db_dependencies, user: auth_dependencies):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied: You are not a Product Manager")
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-    
 
 
-@router.post("/create_project", response_model=ProjectCreate, description='This method creates project')
-def create_project(project_name: Annotated[
-    str, Path(..., title="Project Name", description="Name of the project to retrieve", max_length=50)],
-                   project_status: ProjectStatus, db: db_dependencies, user: auth_dependencies):
+@router.post("/create_project/{project_name}", description='This method creates project')
+def create_project(project_status: ProjectStatus, db: db_dependencies, user: auth_dependencies,
+                   project_name: str = Path(..., title="Project Name", description="Name of the project to retrieve", max_length=50)):
     try:
-        if not project_name or project_status:
+        if not project_name or not project_status:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Some field is empty")
         if user.role == ProjectRole.ProductManager:
-            project = projs.get_project_by_name(project_name, db)
+            project = get_project_by_name(project_name, db)
             if project:
                 raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                                     detail="Project with this name already exists")
             new_project = Project(name=project_name, status=project_status)
             db.add(new_project)
             db.commit()
-            return new_project
+            return {"message": "Project was successfully created"}
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail="Access denied: You are not a Product Manager")
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise e
 
 
 @router.get("/get_project/{project_id}", response_model=ProjectResponse,
             description='This method returns a project by ID')
-def get_project(project_id: Annotated[
-    int, Path(..., title="Project ID", description="The ID of the project to retrieve", ge=0)],
-                db: db_dependencies, user: auth_dependencies):
+def get_project(db: db_dependencies, user: auth_dependencies,
+                project_id: int = Path(..., title="Project ID", description="The ID of the project to retrieve", ge=0)):
     try:
-        project = projs.get_project_by_id(project_id, db)
+        project = get_project_by_id(project_id, db)
         if not project:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
         project = ProjectResponse(id=project.id,
@@ -68,7 +64,7 @@ def get_project(project_id: Annotated[
                                   status=project.status)
         return project
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise e
 
 
 @router.put("/update_project/{project_id}", description='This method updates the name and status of a project by ID')
@@ -77,7 +73,7 @@ def update_project(
         project_name: str, project_status: ProjectStatus, db: db_dependencies, user: auth_dependencies):
     if user.role == ProjectRole.ProductManager:
         try:
-            project = projs.get_project_by_id(project_id, db)
+            project = get_project_by_id(project_id, db)
             if not project:
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
             if project_name:
@@ -85,39 +81,10 @@ def update_project(
             if project_status:
                 project.status = project_status
             db.commit()
-            return {"message": "Project updated successfully"}
+            return {"message": "Project was updated successfully"}
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail="Access denied: You are not a Product Manager")
 
-
-@router.post("/add_user/{project_id}/{user_id}", description='Add user to project')
-def add_user_to_project(db: db_dependencies,
-                        current_user: auth_dependencies,
-                        project_id: int = Path(..., description="The ID of the project"),
-                        user_id: int = Path(..., description="The ID of the user")):
-    if current_user.role != ProjectRole.ProductManager:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="Permission denied. You must be a Product Manager to add users to a project.")
-    project = projs.get_project_by_id(project_id, db)
-    user = get_user_by_id(user_id, db)
-    if not project:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
-    if not user:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not found")
-    project.users.append(user)
-    db.commit()
-    db.refresh(project)
-    return {"message": "User added to project successfully"}
-
-
-@router.get("/get_users/{project_id}", description='Get users attached to a project')
-def get_users_attached_to_project(db: db_dependencies,
-                                  project_id: int = Path(..., description="The ID of the project")):
-    project = get_users_from_project(project_id, db)
-    if not project:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
-    users = project.users
-    return users

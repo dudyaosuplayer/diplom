@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, Path
 
-from backend.db.queries.users import create_user, delete_user, get_users, get_user_by_email, \
+from backend.db.queries.users import create_new_user, delete_user, get_all_users, get_user_by_email, \
     get_user_by_username, get_user_by_id
 from backend.db.database import db_dependencies
 from backend.auth.auth import auth_dependencies
@@ -29,7 +29,7 @@ async def get_all_users(db: db_dependencies,
 
     Returns a list of users.
     """
-    users = get_users(db, skip=skip, limit=limit)
+    users = get_all_users(db, skip=skip, limit=limit)
     return users
 
 
@@ -55,7 +55,7 @@ async def create_user(user: UserCreate, db: db_dependencies):
         raise HTTPException(status_code=400, detail="Email already registered")
     if db_user_username:
         raise HTTPException(status_code=400, detail="Username already registered")
-    return create_user(db=db, user=user)
+    return create_new_user(db=db, user=user)
 
 
 @router.delete('/', response_model=User)
