@@ -1,3 +1,4 @@
+### Deployment
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -61,13 +62,15 @@ spec:
      nginx.ingress.kubernetes.io/rewrite-target: /
  spec:
    rules:
-   - host: http://cnrprod-team-58619.com
+   - host: http://cnrprod-team-58619.com ## наш домен
      http:
        paths:
        - path: /
          backend:
            serviceName: mvp
            servicePort: 8080
+
+
 
 apiVersion: cert-manager.io/v1
 kind: Issuer
