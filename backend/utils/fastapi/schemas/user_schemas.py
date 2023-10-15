@@ -1,4 +1,8 @@
+
+from typing import Optional
+
 from pydantic import BaseModel, EmailStr, constr
+
 from backend.utils.users import ProjectRole
 
 
@@ -25,3 +29,11 @@ class UserCreate(BaseModel):
 class UserDelete(BaseModel):
     nickname: str
     password: str
+
+
+class UserDTO(BaseModel):
+    id: int
+    register_date: Optional[str]
+    nickname: str
+    email: Optional[str]
+    role: str
