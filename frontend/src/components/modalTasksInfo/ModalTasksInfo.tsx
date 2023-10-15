@@ -12,8 +12,7 @@ import './modal.scss';
 const validationSchema = Yup.object().shape({
     name: Yup.string().required("Put the name"),
     description: Yup.string().required("Put the description"),
-    created: Yup.string().required("Put the created"),
-    deadline: Yup.string().required("Put the deadline"),
+    deadline: Yup.date().required(`Incorrect date`),
     executor: Yup.string().required("Put the executor"),
     priority: Yup.string().required("Put the priority"),
     status: Yup.string().required("Put the status"),
@@ -45,7 +44,6 @@ const ModalTaskInfo: React.FC<Props> = (props) => {
                     initialValues={{ 
                         name: data.name,
                         description: data.description,
-                        created: data.created, 
                         deadline: data.deadline,
                         executor: data.executor,
                         priority: data.priority,
@@ -71,10 +69,7 @@ const ModalTaskInfo: React.FC<Props> = (props) => {
                                     placeholder='Эта задача ...' required={true} 
                                 />
 
-                            <Input type='text' name='created' label='Создан' 
-                                    values={values} errors={errors} isSubmitting={isSubmitting}
-                                    placeholder='11' required={true} 
-                                />
+                            
 
                             <Input type='text' name='deadline' label='Дедлайн' 
                                     values={values} errors={errors} isSubmitting={isSubmitting}
@@ -99,12 +94,14 @@ const ModalTaskInfo: React.FC<Props> = (props) => {
                                 />    
                              
                             <div className="form__buttons">
+                                <div>
+                                    <p>Задача создана {data.created}</p>
+                                </div>
                                 <Button type="submit" text='Сохранить изменения' />
                             </div> 
                         </Form>
                     )}
                 </Formik>        
-                
             </div>
         </div>
     )
