@@ -1,4 +1,4 @@
-
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr, constr
@@ -33,7 +33,7 @@ class UserDelete(BaseModel):
 
 class UserDTO(BaseModel):
     id: int
-    register_date: Optional[str]
+    register_date: Optional[datetime]
     nickname: str
     email: Optional[str]
     role: str

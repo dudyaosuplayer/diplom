@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import List
 
 from fastapi import APIRouter, Path, Query, HTTPException, status
 
@@ -6,9 +6,8 @@ from backend.auth.auth import auth_dependencies
 from backend.db.database import db_dependencies
 from backend.db.queries.projects import get_project_by_id
 from backend.db.queries.users import get_all_users, get_user_by_id, get_user_by_username, create_new_user
-from backend.models.models import Project
 from backend.utils.fastapi.tags import Tags
-from backend.utils.fastapi.schemas.user_schemas import User, UserCreate, UserDelete, UserDTO
+from backend.utils.fastapi.schemas.user_schemas import UserCreate, UserDTO
 from backend.utils.users import ProjectRole
 
 
@@ -20,13 +19,12 @@ def get_users(db: db_dependencies,
               skip: int | None = Query(0, title="Number of values to skip", description="Number of values to skip (from the beginning)"),
               limit: int | None = Query(100, title="Limit number of entries", description="Limit number of entries (100 is optimal)")):
     try:
-        users = users_q.get_users(db, skip=skip, limit=limit)
-        user_dtos = [UserDTO
-                     (id=user.id,
-                      register_date=str(user.register_date),
-                      nickname=user.nickname,
-                      email=user.email,
-                      role=user.role) for user in users]
+        users = get_all_users(db, skip=skip, limit=limit)
+        user_dtos = [UserDTO(id=user.id,
+                             register_date=user.register_date,
+                             nickname=user.nickname,
+                             email=user.email,
+                             role=user.role) for user in users]
         return user_dtos
     except Exception as e:
         raise e
