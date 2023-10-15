@@ -40,10 +40,12 @@ def get_tasks(db: db_dependencies,
 
 
 @router.get("/get_task/{project_id}/{task_id}", description='This method returns task from project')
-def get_task(db: db_dependencies,
+def get_task(db: db_dependencies, current_user: auth_dependencies,
              project_id: int = Path(..., title="Project ID", description="The ID of the project"),
              task_id: int = Path(..., title="Task ID", description="The ID of the task")):
     try:
+        if User.role != ProjectRole.ProductManager:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only Product Manager can create a task")
         task = get_task_by_from_project(project_id, task_id, db)
         if not task:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Task not found")
