@@ -13,19 +13,6 @@ from backend.utils.fastapi.schemas.user_schemas import User, UserCreate, UserDel
 router = APIRouter(prefix='/users', tags=[Tags.users])
 
 
-# @router.get("/get_users", description='This method returns all users')
-# def get_users(db: db_dependencies,
-#               skip: Annotated[int | None, Query(title="Number of values to skip",
-#                                                 description="Number of values to skip (from the beginning)")] = 0,
-#               limit: Annotated[int | None, Query(title="Limit number of entries",
-#                                                  description="Limit number of entries (100 is optimal)")] = 100):
-#     try:
-#         users = users_q.get_users(db, skip=skip, limit=limit)
-#         return users
-#     except Exception as e:
-#         raise e
-
-
 @router.get("/get_users", response_model=List[UserDTO], description='This method returns all users')
 def get_users(
               db: db_dependencies,
