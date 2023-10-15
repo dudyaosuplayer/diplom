@@ -15,31 +15,19 @@ from backend.utils.users import ProjectRole
 router = APIRouter(prefix='/users', tags=[Tags.users])
 
 
-<<<<<<< backend/endpoints/users.py
 @router.get("/get_users", response_model=List[UserDTO], description='This method returns all users')
-def get_users(
-              db: db_dependencies,
-              skip: int = 0,
-              limit: int = 100):
-    try:
-        users = users_q.get_users(db, skip=skip, limit=limit)
-        # Преобразуйте результат из ORM модели в DTO
-        user_dtos = [UserDTO
-                     (id=user.id,
-                      register_date=str(user.register_date),  # или любой другой формат для даты
-                      nickname=user.nickname,
-                      email=user.email,
-                      role=user.role) for user in users]
-        return user_dtos
-=======
-@router.get("/get_users", description='This method returns all users')
 def get_users(db: db_dependencies,
               skip: int | None = Query(0, title="Number of values to skip", description="Number of values to skip (from the beginning)"),
               limit: int | None = Query(100, title="Limit number of entries", description="Limit number of entries (100 is optimal)")):
     try:
-        users = get_all_users(db, skip, limit)
-        return users
->>>>>>> backend/endpoints/users.py
+        users = users_q.get_users(db, skip=skip, limit=limit)
+        user_dtos = [UserDTO
+                     (id=user.id,
+                      register_date=str(user.register_date),
+                      nickname=user.nickname,
+                      email=user.email,
+                      role=user.role) for user in users]
+        return user_dtos
     except Exception as e:
         raise e
 
@@ -62,22 +50,6 @@ def get_project_users(db: db_dependencies,
         return user_dtos
     except Exception as e:
         raise e
-
-
-# @router.get("/get_users/{project_id}", description='This method returns all users from project')
-# def get_project_users(db: db_dependencies,
-#                       credentials: auth_dependencies,
-#                       project_id: int = Path(..., description="The ID of the project")):
-#     try:
-#         project = db.query(Project).filter(Project.id == project_id).first()
-#         if not project:
-#             return {"message": "Project not found"}
-#         users = project.users
-#         return users
-#     except Exception as e:
-#         raise e
-#     finally:
-#         db.close()
 
 
 @router.post("/create_user", description='This method creates user')
