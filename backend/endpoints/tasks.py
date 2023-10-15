@@ -115,7 +115,7 @@ def assign_task(db: db_dependencies, current_user: auth_dependencies,
         raise e
 
 
-@router.get("/{user_id}/{project_id}", response_model=TaskResponse, description='This method returns all tasks in project assigned to user')
+@router.get("/{user_id}/{project_id}", description='This method returns all tasks in project assigned to user')
 def get_tasks_for_user(project_id: int, user_id: int, db: db_dependencies):
     try:
         user = get_user_by_id(db, user_id)
@@ -124,10 +124,10 @@ def get_tasks_for_user(project_id: int, user_id: int, db: db_dependencies):
         project = get_project_by_id(project_id, db)
         if not project:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Porject not found")
-        task = get_tasks_by_user_in_project(project_id, user_id, db)
-        if not task:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Task not found for this user")
-        return task
+        tasks = get_tasks_by_user_in_project(project_id, user_id, db)
+        if not tasks:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Tasks not found for this user")
+        return tasks
     except Exception as e:
         raise e
 
