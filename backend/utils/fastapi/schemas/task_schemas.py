@@ -13,7 +13,6 @@ class TaskResponse(BaseModel):
     user_id: Optional[int] = None
     project_id: int
     status: Optional[str] = None
-    depth: Optional[int] = None
 
 
 class TaskCreate(BaseModel):
@@ -23,5 +22,4 @@ class TaskCreate(BaseModel):
     user_id: Optional[int] = None
     project_id: int
     status: Optional[str] = None
-    depth: Optional[int] = None
 
