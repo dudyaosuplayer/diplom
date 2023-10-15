@@ -1,1 +1,87 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mvp
+  labels:
+   app: mvp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mvp
+  template:
+    metadata:
+      labels:
+        app: mvp
+    spec:
+      containers:
+      - name: mvp
+        image: rsafin12/mvp_1:0.1.2
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: mvp
+#   labels:
+#     app: mvp
+# spec:
+#   type: NodePort
+#   ports:
+#   - protocol: TCP
+#     port: 8080
+#     targetPort: 8080
+#     nodePort: 30800
+#   selector:
+#     app: mvp
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mvp
+spec:
+  selector:
+    app: mvp
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080    
+
+---
+ apiVersion: networking.k8s.io/v1beta1 # for versions before 1.14 use extensions/v1beta1
+ kind: Ingress
+ metadata:
+   name: mvp-ingress
+   annotations:
+     nginx.ingress.kubernetes.io/rewrite-target: /
+ spec:
+   rules:
+   - host: http://cnrprod-team-58619.com
+     http:
+       paths:
+       - path: /
+         backend:
+           serviceName: mvp
+           servicePort: 8080
+
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: hasashi5@gmailc.om # Нужно указать реальный!
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    solvers:
+    - http01:
+        ingress:
+          class: nginx           
+
 
