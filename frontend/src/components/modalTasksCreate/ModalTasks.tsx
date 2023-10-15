@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import Button from "../button/Button";
 import Input from "../input/Input";
 import Select from "../select/Select";
+import InputDate from "../inputDate/InputDate";
 
 import './modal.scss';
 
@@ -12,8 +13,9 @@ import './modal.scss';
 const validationSchema = Yup.object().shape({
     name: Yup.string().required("Put the name"),
     description: Yup.string().required("Put the description"),
-    executor: Yup.string().required("Who will do it"),
+    deadline: Yup.date().required(`Incorrect date`),
     status: Yup.string().required("Select one of the options"),
+    executor: Yup.string().required("Who will do it"),
     priority: Yup.string().required("Select one of the options"),
 });
 
@@ -40,8 +42,9 @@ const ModalTasks: React.FC<Props> = (props) => {
                     initialValues={{ 
                         name: "",
                         description: "",
-                        executor: "",
+                        deadline: '',
                         status: "",
+                        executor: "",
                         priority: "",
                     }}
                     validateOnChange={false}
@@ -63,16 +66,20 @@ const ModalTasks: React.FC<Props> = (props) => {
                                     values={values} errors={errors} isSubmitting={isSubmitting}
                                     placeholder='Надо сделать ...' required={true} 
                                 />
-                            
+
+                            <InputDate type='date' label='Дедлайн' name='deadline'
+                                values={values} errors={errors} isSubmitting={isSubmitting}
+                                required={true} placeholder='Выберите дату' />
+
+                            <Select name='status' label="Статус задачи" required={true}
+                                    arr={["в работе", "завершена", "на тестировании"]} 
+                                    addEmptyOption={true} 
+                                    errors={errors} isSubmitting={isSubmitting}
+                                />
+
                             <Input type='text' name='executor' label='Исполнитель' 
                                     values={values} errors={errors} isSubmitting={isSubmitting}
                                     placeholder='Имя' required={true} 
-                                />
-
-                            <Select name='status' label="Статус задачи" required={true}
-                                    arr={["в работе", "завершена", "на проверке"]} 
-                                    addEmptyOption={true} 
-                                    errors={errors} isSubmitting={isSubmitting}
                                 />
 
                             <Select name='priority' label="Приоритет задачи" required={true}

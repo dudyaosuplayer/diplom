@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import {Field, ErrorMessage } from 'formik';
 import clsx from 'clsx';
 
-import '../styles/input.scss';
+import '../../styles/input.scss';
 
 interface Props {
     label: string,

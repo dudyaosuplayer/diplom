@@ -4,6 +4,8 @@ import { Formik, Form } from 'formik';
 import * as Yup from "yup";
 import Button from "../button/Button";
 import Input from "../input/Input";
+import Select from "../select/Select";
+import InputDate from "../inputDate/InputDate";
 import './modal.scss';
 
 
@@ -11,8 +13,10 @@ const validationSchema = Yup.object().shape({
     name: Yup.string().required("Put the name"),
     description: Yup.string().required("Put the description"),
     participants: Yup.string().required("Put participants"),
-    begin: Yup.string().required("Put the begin"),
-    end: Yup.string().required("Put the end"),
+    start: Yup.string().required("Put the begin"),
+    finish: Yup.string().required("Put the end"),
+    money: Yup.string().matches(/^\d+$/, "Only numbers").trim()
+        .required("The series must be 4 digits"),
     status: Yup.string().required("Put the status"),
 });
 
@@ -43,8 +47,9 @@ const ModalProjectInfo: React.FC<Props> = (props) => {
                         name: data.name,
                         description: data.description,
                         participants: data.participants,
-                        begin: data.begin,
-                        end: data.end,
+                        start: data.begin,
+                        finish: data.end,
+                        money: "",
                         status: data.status
                     }}
                     validateOnChange={false}
@@ -72,15 +77,24 @@ const ModalProjectInfo: React.FC<Props> = (props) => {
                                     placeholder='Вася' required={true} 
                                 />
 
-                            <Input type='text' name='end' label='Завершение' 
+                            <InputDate type='date' label='Дата начала проекта' name='start'
                                     values={values} errors={errors} isSubmitting={isSubmitting}
-                                    placeholder='11' required={true} 
-                                />
+                                    required={true} placeholder='Выберите дату' />
+
+                            <InputDate type='date' label='Дата завершения проекта' name='finish'
+                                    values={values} errors={errors} isSubmitting={isSubmitting}
+                                    required={true} placeholder='Выберите дату' />
+
+                            <Input type='text' name='money' label='Сумма проекта' 
+                                    placeholder='10000' required={true} errors={errors} 
+                                    isSubmitting={isSubmitting} values={values}
+                                    />
                                 
-                            <Input type='text' name='status' label='Статус' 
-                                    values={values} errors={errors} isSubmitting={isSubmitting}
-                                    placeholder='в работе' required={true} 
-                                /> 
+                                <Select name='status' label="Статус проекта" required={true}
+                                    arr={["активный", "завершен"]} 
+                                    addEmptyOption={true} 
+                                    errors={errors} isSubmitting={isSubmitting}
+                                />
                              
                             <div className="form__buttons">
                                 <Button type="submit" text='Сохранить изменения' />
