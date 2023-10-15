@@ -39,12 +39,11 @@ def get_project_users(db: db_dependencies,
         if not project:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
         users = project.users
-        user_dtos = [UserDTO
-                     (id=user.id,
-                      register_date=str(user.register_date),  # или любой другой формат для даты
-                      nickname=user.nickname,
-                      email=user.email,
-                      role=user.role) for user in users]
+        user_dtos = [UserDTO(id=user.id,
+                             register_date=user.register_date,
+                             nickname=user.nickname,
+                             email=user.email,
+                             role=user.role) for user in users]
         return user_dtos
     except Exception as e:
         raise e
