@@ -9,7 +9,7 @@ from backend.models.models import User, Task
 from backend.utils.fastapi.schemas.task_schemas import TaskResponse, TaskCreate
 from backend.utils.fastapi.tags import Tags
 from backend.db.queries.users import get_user_by_id
-from backend.db.queries.tasks import get_task_by_project_id, get_task_by_from_project, get_task_by_task_id, \
+from backend.db.queries.tasks import get_tasks_by_project_id, get_task_by_from_project, get_task_by_task_id, \
     assign_task_to_user
 from backend.db.queries.projects import get_project_by_id
 from utils.statuses import TaskStatus
@@ -20,12 +20,12 @@ router = APIRouter(prefix='/tasks', tags=[Tags.tasks])
 
 
 @router.get("/get_tasks/{project_id}", description='This method returns all tasks from project')
-def get_tasks(project_id: Annotated[int, Path(..., title="Project ID", description="The ID of the project to extract tasks from", ge=0)],
-              db: db_dependencies):
+def get_tasks(db: db_dependencies,
+              project_id: int = Path(..., title="Project ID", description="The ID of the project to extract tasks from", ge=0)):
     try:
-        tasks = get_task_by_project_id(project_id, db)
+        tasks = get_tasks_by_project_id(project_id, db)
         if not tasks:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Comments not found")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Tasks not found")
         response_tasks = [TaskResponse(id=task.id,
                                        parent_id=task.parent_id,
                                        body=task.body,
@@ -33,17 +33,16 @@ def get_tasks(project_id: Annotated[int, Path(..., title="Project ID", descripti
                                        timestamp=task.timestamp if task.timestamp else datetime.now(),
                                        user_id=task.user_id,
                                        project_id=task.project_id,
-                                       status=task.status,
-                                       depth=task.depth) for task in tasks]
+                                       status=task.status) for task in tasks]
         return response_tasks
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @router.get("/get_task/{project_id}/{task_id}", description='This method returns task from project')
-def get_task(project_id: Annotated[int, Path(..., title="Project ID", description="The ID of the project")],
-             task_id: Annotated[int, Path(..., title="Task ID", description="The ID of the task")],
-             db: db_dependencies):
+def get_task(db: db_dependencies,
+             project_id: int = Path(..., title="Project ID", description="The ID of the project"),
+             task_id: int = Path(..., title="Task ID", description="The ID of the task")):
     try:
         task = get_task_by_from_project(project_id, task_id, db)
         if not task:
@@ -55,8 +54,7 @@ def get_task(project_id: Annotated[int, Path(..., title="Project ID", descriptio
                                      timestamp=task.timestamp if task.timestamp else datetime.now(),
                                      user_id=task.user_id,
                                      project_id=task.project_id,
-                                     status=task.status,
-                                     depth=task.depth)
+                                     status=task.status)
         return response_task
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
@@ -125,7 +123,7 @@ def assign_task(task_id: int,
     return {"detail": f"Task with ID {task_id} assigned to user width ID {assigned_user_id} successful!"}
 
 
-@router.get("/{user_id}/task", response_model=TaskResponse)
+@router.get("/{user_id}", response_model=TaskResponse)
 def get_task_for_user(user_id: int, db: db_dependencies):
     user = get_user_by_id(db, user_id)
     if not user:
