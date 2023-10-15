@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: mvp
-        image: rsafin12/mvp_1:0.1.2
+        image: git.codenrock.com:5050/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA
         ports:
         - containerPort: 8080
           protocol: TCP
