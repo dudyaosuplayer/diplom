@@ -17,7 +17,7 @@ const dataInfo = [
         participants: 'ann',
         begin: '1',
         end: '4',
-        status: 'work'
+        status: 'активный'
     },
     {
         name: 'Неоджира',
@@ -25,7 +25,7 @@ const dataInfo = [
         participants: 'bob',
         begin: '5',
         end: '9',
-        status: 'begin'
+        status: 'завершен'
     },
     {
         name: 'Something',
@@ -33,7 +33,7 @@ const dataInfo = [
         participants: 'cat',
         begin: '4',
         end: '9',
-        status: 'work'
+        status: 'активный'
     }
 ];
 

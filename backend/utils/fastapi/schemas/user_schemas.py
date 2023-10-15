@@ -1,6 +1,9 @@
+
 from typing import Optional
 
-from pydantic import BaseModel, constr
+from pydantic import BaseModel, EmailStr, constr
+
+from backend.utils.users import ProjectRole
 
 
 class User(BaseModel):
@@ -15,8 +18,8 @@ class User(BaseModel):
 
 class UserCreate(BaseModel):
     nickname: str
-    role: str
-    email: str
+    role: ProjectRole
+    email: EmailStr
     password: constr(min_length=6, max_length=8)
 
     class Config:
