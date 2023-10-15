@@ -71,25 +71,23 @@ def get_project(db: db_dependencies, user: auth_dependencies,
         raise e
 
 
-@router.put("/update_project/{project_id}", description='This method updates the name and status of a project by ID')
+@router.put("/update_project/{project_id}/{project_name}", description='This method updates the name and status of a project by ID')
 def update_project(project_status: ProjectStatus, db: db_dependencies, user: auth_dependencies,
-        project_id: Annotated[int, Path(..., title="Project ID", description="The ID of project to retrieve", ge=0)],
+        project_id: int = Path(..., title="Project ID", description="The ID of project to retrieve", ge=0),
         project_name: str = Path(..., title="Project Name", description="Name of the project to retrieve", 
                                  min_length=1, max_length=50)):
-    if user.role == ProjectRole.ProductManager:
-        try:
-            project = get_project_by_id(project_id, db)
-            if not project:
-                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
-            if project_name:
-                project.name = project_name
-            if project_status:
-                project.status = project_status
-            db.commit()
-            return {"message": "Project was updated successfully"}
-        except Exception as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-    else:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="Access denied: You are not a Product Manager")
-
+    try:
+        if user.role != ProjectRole.ProductManager:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="Access denied: You are not a Product Manager")
+        project = get_project_by_id(project_id, db)
+        if not project:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Project not found")
+        if project_name:
+            project.name = project_name
+        if project_status:
+            project.status = project_status
+        db.commit()
+        return {"message": "Project was updated successfully"}     
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
