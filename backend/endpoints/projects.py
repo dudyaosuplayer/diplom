@@ -4,7 +4,7 @@ from fastapi import APIRouter, Path, HTTPException, status, Depends
 
 from backend.auth.auth import auth_dependencies, verify_credentials
 from backend.db.database import db_dependencies
-from backend.models.models import Project
+from backend.models.models import Project, User
 from backend.utils.fastapi.schemas.project_schemas import ProjectResponse
 from backend.utils.fastapi.tags import Tags
 from backend.utils.users import ProjectRole
@@ -19,6 +19,7 @@ router = APIRouter(prefix='/projects', tags=[Tags.projects])
 
 @router.get("/get_projects", description='This method returns all projects')
 def get_projects(db: db_dependencies, user: auth_dependencies):
+
     try:
         if user.role == ProjectRole.ProductManager:
             projects = get_all_projects(db)
@@ -27,7 +28,8 @@ def get_projects(db: db_dependencies, user: auth_dependencies):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                 detail="Access denied: You are not a Product Manager")
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Access denied: You are not a Product Manager")
 
 
 @router.post("/create_project/{project_name}", description='This method creates project')

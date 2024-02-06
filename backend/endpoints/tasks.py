@@ -26,43 +26,27 @@ def get_tasks(db: db_dependencies,
         tasks = get_tasks_by_project_id(project_id, db)
         if not tasks:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Tasks not found")
-        response_tasks = [TaskResponse(id=task.id,
-                                       parent_id=task.parent_id,
-                                       body=task.body,
-                                       task_name=task.task_name,
-                                       timestamp=task.timestamp if task.timestamp else datetime.now(),
-                                       user_id=task.user_id,
-                                       project_id=task.project_id,
-                                       status=task.status) for task in tasks]
-        return response_tasks
+        return tasks
     except Exception as e:
         raise e
 
 
-@router.get("/get_task/{project_id}/{task_id}", description='This method returns task from project')
+@router.post("/get_task/{project_id}/{task_id}", description='This method returns task from project')
 def get_task(db: db_dependencies, current_user: auth_dependencies,
              project_id: int = Path(..., title="Project ID", description="The ID of the project"),
              task_id: int = Path(..., title="Task ID", description="The ID of the task")):
     try:
         if User.role != ProjectRole.ProductManager:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only Product Manager can create a task")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only Product Manager can get tasks of ")
         task = get_task_by_from_project(project_id, task_id, db)
         if not task:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Task not found")
-        response_task = TaskResponse(id=task.id,
-                                     parent_id=task.parent_id,
-                                     body=task.body,
-                                     task_name=task.task_name,
-                                     timestamp=task.timestamp if task.timestamp else datetime.now(),
-                                     user_id=task.user_id,
-                                     project_id=task.project_id,
-                                     status=task.status)
-        return response_task
+        return task
     except Exception as e:
         raise e
 
 
-@router.post("/get_task/{project_id}/{task_id}/{task_name}", description='This method creates task in project')
+@router.post("/create_task/{project_id}/{task_id}/{task_name}", description='This method creates task in project')
 def create_task(user_id: int,
                 task_status: TaskStatus,
                 db: db_dependencies,

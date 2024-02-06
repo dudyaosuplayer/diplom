@@ -12,7 +12,7 @@ app = FastAPI(
 add_routers(app)
 
 origins = [
-    "http://localhost",
+    "http://localhost:3000",
     "http://localhost:8080",
 ]
 
